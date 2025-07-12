@@ -116,9 +116,67 @@ we want the netlist in simple way so we modify the switch.
 ## 1- Introduction to timing .libs
 ### (i) SKY130RTL D2SK1 L1 Lab4 Introduction to dot Lib part1
 
+In this session we'll have walkthrough our library.
+![image](https://github.com/user-attachments/assets/19991893-cba2-4fea-82b8-b1e453779fcd)
+to remove the red colour type:syn off
+tt stands for typical. Process, temperature and voltage variation will determine how my silicon will work.
+25 tells the temperature and 1v8 indicates the voltage.
+### (ii) SKY130RTL D2SK1 L2 Lab4 Introduction to dot Lib part2
+esc+ :se nu to display line number.
+### (iii) SKY130RTL D2SK1 L3 Lab4 Introduction to dot Lib part3
+esc + 🆚
+to search anything- esc+:/keyword(whatever the keyword is) for eg if keyword is xxxxxand2_0 then simply use :/.*and2_0
+esc+:/area
+![image](https://github.com/user-attachments/assets/878e1b41-534c-4d9d-8d7c-fe4d7557502b)
+![image](https://github.com/user-attachments/assets/136d379d-0ae4-4ab4-ba7c-c8705726fddd)
+wider cell more power consumption but delay wise it willbe less.
+## 2-Hierarchical vs Flat Synthesis
+### (i) SKY130RTL D2SK2 L1 Lab05 Hier synthesis flat synthesis part1
+![image](https://github.com/user-attachments/assets/0da7fe9f-9573-4aa5-ac32-7293cec873d9)
+module 1 is or gate. module 2 is and gate. multiple module is instantiating the sub module 1 & 2.
+![image](https://github.com/user-attachments/assets/2fc1056c-9156-4e04-b373-072abed148fb)
+![image](https://github.com/user-attachments/assets/6f844e34-d616-47ac-8905-24b4cd2c258a)
+after this launch yosys.
+![image](https://github.com/user-attachments/assets/8751ae3e-815e-4101-a41d-8b0f02438162)
+![image](https://github.com/user-attachments/assets/fdd31f74-c644-4d6f-88d4-626e2960318b)
+![image](https://github.com/user-attachments/assets/430bdfd5-1500-43ef-b381-8905d8fad671)
+![image](https://github.com/user-attachments/assets/a55e859a-fca0-4bd8-844a-97178814b986)
+![image](https://github.com/user-attachments/assets/56852e6d-70de-44fc-ba54-3eb45827852d)
+![image](https://github.com/user-attachments/assets/fe9be37d-5d31-4831-b9ac-02122d8d1a87)
+![image](https://github.com/user-attachments/assets/ca16428d-3677-4f3c-a13e-f67bc7c3c53a)
+ideally we expect And and OR gate to show but it's not like that.
+![image](https://github.com/user-attachments/assets/06e82f92-b2dc-4e94-aab8-3b9c48ed8f89)
+![image](https://github.com/user-attachments/assets/45ff7089-2fe7-4192-9d3f-fff89cbf5fc9)
+we expected to infer OR gate downward of AND gate. But due to Demorgan's theorem 
+![image](https://github.com/user-attachments/assets/c7cb4386-31a1-45c0-8c57-a1175ab691eb)
+stacked pmos is always bad because pmos has poor mobility. 
+### (ii) SKY130RTL D2SK2 L2 Lab05 Hier synthesis flat synthesis part2
+![image](https://github.com/user-attachments/assets/1e9fa8e4-54db-4bbf-ac96-bad151a0a583)
+![image](https://github.com/user-attachments/assets/6595c05f-8ea6-43f8-a947-858f6a538896)
+![image](https://github.com/user-attachments/assets/f9995c08-0005-452d-955f-c3e666b075ab)
+now exit yosys and again open yosys.
+![image](https://github.com/user-attachments/assets/2bab6162-acbc-4016-ac71-cee512cc6daa)
+![image](https://github.com/user-attachments/assets/78f9c310-3199-4b09-a309-2b018a75fab3)
+![image](https://github.com/user-attachments/assets/247967b1-314e-4eed-943c-7fc28541b31a)
+![image](https://github.com/user-attachments/assets/a4ba2cac-c515-42f9-b4a8-a2283d6edfea)
+![image](https://github.com/user-attachments/assets/8ad0696c-49ca-4fcb-b631-d4bdc494e584)
+We see only 1 AND gate in the diagram. we are not seeing submodule 2.
 
+sagar di vohti 
+## 3- Various Flop Coding Styles and optimization
+### (i)SKY130RTL D2SK3 L1 Why Flops and Flop coding styles part1
+Sagar di vohti 
+### (ii) SKY130RTL D2SK3 L2 Why Flops and Flop coding styles part2
+Sagar di vohti
+### (iii) SKY130RTL D2SK3 L3 Lab flop synthesis simulations part1
+![image](https://github.com/user-attachments/assets/092ef44f-224f-45a8-a3eb-ec2ba519ce03)
+![image](https://github.com/user-attachments/assets/ec086fae-c919-42f5-8452-e60890eea172)
+Sagar di vohti
 
+![image](https://github.com/user-attachments/assets/77891de2-cc9e-4618-a47c-aec6634de09e)
 
+sagar di vohti
+### (iv) SKY130RTL D2SK3 L4 Lab flop synthesis simulations part2
 
 
 
