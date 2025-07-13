@@ -694,5 +694,24 @@ Parses it and generates an internal RTL representation.
 4. Run Synthesis
 synth -top opt_check
 
+<img width="1871" height="971" alt="image" src="https://github.com/user-attachments/assets/fd5b2f98-3d6a-4c47-9c49-7c353cb46e89" />
 
- 
+ "opt_clean -purge" is like saying:
+“Delete everything that’s not being used — no mercy!”
+
+
+<img width="1830" height="935" alt="image" src="https://github.com/user-attachments/assets/2733133a-3415-4ad4-aa79-70eec2cdb6e7" />
+<img width="947" height="506" alt="image" src="https://github.com/user-attachments/assets/c4953632-54e4-487e-9210-0f89857ab094" />
+
+from above image we were expecting AND gate. Same can be seen in gvim. 
+
+Now let's read another verilog file.
+
+<img width="1828" height="977" alt="image" src="https://github.com/user-attachments/assets/67d31528-50f7-4ed6-86c9-bf43ffffdc37" />
+
+<img width="1838" height="942" alt="image" src="https://github.com/user-attachments/assets/a4dd248f-542d-4086-927a-2257b4a18201" />
+we were expecting OR gate and we got the same.
+<img width="978" height="495" alt="image" src="https://github.com/user-attachments/assets/49d06874-bda1-43cf-a87e-9f7aa1bbe927" />
+
+
+
