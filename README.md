@@ -744,4 +744,5 @@ Modify it slightly to create a new version (dff_const2.v)
 
 Compare logic for debugging or analysis
 
+<img width="1827" height="915" alt="image" src="https://github.com/user-attachments/assets/25ce9860-654c-4dc1-8013-3d2a7666d054" />
 
