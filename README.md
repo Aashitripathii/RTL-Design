@@ -713,5 +713,35 @@ Now let's read another verilog file.
 we were expecting OR gate and we got the same.
 <img width="978" height="495" alt="image" src="https://github.com/user-attachments/assets/49d06874-bda1-43cf-a87e-9f7aa1bbe927" />
 
+### (ii) SKY130RTL D3SK2 L2 Lab06 Combinational Logic Optimisations part2
+
+<img width="1300" height="587" alt="image" src="https://github.com/user-attachments/assets/9a4e7eab-8284-4dbf-9169-1b61d280a93e" />
+
+<img width="1839" height="1013" alt="image" src="https://github.com/user-attachments/assets/4a4414da-dfe3-4ea1-aa4b-d807c4d5a774" />
+
+we were expecting 3 input AND gate and we got the same.
+
+## 3- Sequential logic optimizations
+### (i) SKY130RTL D3SK3 L1 Lab07 Sequential Logic Optimisations part1
+
+<img width="1821" height="350" alt="image" src="https://github.com/user-attachments/assets/0f22de63-5632-475b-8c7a-d9e7b808b3cd" />
+
+ gvim dff_const1.v -o dff_const2.v
+This command opens two files side-by-side in gvim (a graphical version of Vim):
+
+dff_const1.v (the source file)
+
+dff_const2.v (another file for comparison or editing)
+
+The -o option means "open horizontally split windows" so you can view and compare/edit them together.
+
+Why is this useful?
+When working on variations of D flip-flop designs, it helps to:
+
+Reuse structure from a previous version (dff_const1.v)
+
+Modify it slightly to create a new version (dff_const2.v)
+
+Compare logic for debugging or analysis
 
 
