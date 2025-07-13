@@ -177,6 +177,27 @@ Sagar di vohti
 
 sagar di vohti
 ### (iv) SKY130RTL D2SK3 L4 Lab flop synthesis simulations part2
+![image](https://github.com/user-attachments/assets/8b898372-2a8a-4bab-beae-454e1033434c)
+![image](https://github.com/user-attachments/assets/88cacab1-ef82-4c82-b38e-5913a734b96c)
+![image](https://github.com/user-attachments/assets/e8c3f90d-1051-4629-bb32-baacd98d5ded)
+![image](https://github.com/user-attachments/assets/f0aa10bb-8ce1-4503-ae20-1ef0e06c851f)
+![image](https://github.com/user-attachments/assets/2698a3e1-2ebf-42c3-ab8b-096e33dfe4fd)
+![image](https://github.com/user-attachments/assets/df9a4900-29a0-4a81-9713-2638f3766323)
+![image](https://github.com/user-attachments/assets/b27fc2b3-a173-4c96-b8fb-07c6b646563a)
+![image](https://github.com/user-attachments/assets/b429cee9-1a12-4b84-b370-703278097aa5)
+
+### (v) SKY130RTL D2SK3 L5 Interesting optimisations part1
+![image](https://github.com/user-attachments/assets/7d7839d0-7f1b-4035-9708-ea952cb23417)
+![image](https://github.com/user-attachments/assets/b3c3ca1c-dd80-4323-9b98-309d9917b22e)
+
+![image](https://github.com/user-attachments/assets/532bbe13-aebe-4f91-a6fb-36a1fd1bf170)
+![image](https://github.com/user-attachments/assets/a030acdc-53e8-4ea5-a214-871f1a559d00)
+![image](https://github.com/user-attachments/assets/4bbeb23c-e093-42b7-a15c-13bd58119ef0)
+![image](https://github.com/user-attachments/assets/1c78997b-4fe7-466c-90f5-d865ab7ca239)
+
+![image](https://github.com/user-attachments/assets/80cabd66-1ba0-431a-92b2-e6f7d1c5dde3)
+
+### (vi) SKY130RTL D2SK3 L6 Interesting optimisations part2
 
 
 
