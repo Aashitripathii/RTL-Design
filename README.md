@@ -329,6 +329,10 @@ Focus on mapping and optimizing the remaining combinational logic.
 
 ![image](https://github.com/user-attachments/assets/80cabd66-1ba0-431a-92b2-e6f7d1c5dde3)
 
+So instead of generating a multiplier, the tool simply wires the bits accordingly — no actual multiplier hardware is required.
+
+This is a classic strength reduction optimization applied during synthesis.
+
 ### (vi) SKY130RTL D2SK3 L6 Interesting optimisations part2
 
 <img width="900" height="568" alt="image" src="https://github.com/user-attachments/assets/777df45f-91ac-444f-9e33-3ba94872f64c" />
