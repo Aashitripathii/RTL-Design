@@ -202,28 +202,116 @@ It ensures timing-aware synthesis using the correct sequential elements.
 ![image](https://github.com/user-attachments/assets/e8c3f90d-1051-4629-bb32-baacd98d5ded)
 ![image](https://github.com/user-attachments/assets/f0aa10bb-8ce1-4503-ae20-1ef0e06c851f)
 What we Wrote in Verilog:
+
 In your Verilog code, you wrote:
 if (reset)
+
     q <= 0;
+    
 This means:
+
 👉 "When reset is high (1), set q to 0."
+
 This is called active-high reset — it works when the signal is 1.
+
 What’s in the Standard Cell Library:
+
 But the flip-flops in the standard cell library are designed like this:
+
 👉 "When reset is low (0), set q to 0."
+
 This is called active-low reset — it works when the signal is 0.
 The Problem:
+
 we wrote an active-high reset,
 but the hardware cells available only support active-low reset.
 So they don’t match.
+
 What the Tool Does:
 To fix this mismatch, the synthesis tool automatically adds an inverter like this
+
 reset --> [Inverter] --> reset_n --> Flip-Flop (active-low reset)
+
 Now, when your reset signal is 1:
-🔁 the inverter turns it into 0,
-✅ which correctly triggers the flip-flop with an active-low reset.
+
+ the inverter turns it into 0,
+ which correctly triggers the flip-flop with an active-low reset.
+
 ![image](https://github.com/user-attachments/assets/2698a3e1-2ebf-42c3-ab8b-096e33dfe4fd)
 ![image](https://github.com/user-attachments/assets/df9a4900-29a0-4a81-9713-2638f3766323)
+What is dfflibmap in Yosys?
+
+dfflibmap is a command used during synthesis in Yosys to map flip-flops in your RTL design to actual flip-flop cells available in the standard cell library.
+
+Why is it Important?
+1. Connects RTL to Real Hardware
+In your Verilog, you write generic D flip-flops like:
+
+always @(posedge clk) begin
+
+  if (reset)
+  
+    q <= 0;
+    
+  else
+  
+    q <= d;
+    
+end
+
+"dfflibmap finds matching flip-flops from the standard cell library"
+
+The dfflibmap command goes to your library file (like sky130_fd_sc_hd__tt_025C_1v80.lib),
+
+and looks for flip-flops that can do the same job — for example, a D flip-flop triggered on a rising edge.
+
+dfflibmap finds matching flip-flops from the standard cell library (like sky130_fd_sc_hd__dfxtp_1) and replaces the generic one with it.
+ What is Tech Mapping?
+"Technology mapping" means:
+➡ Taking your high-level logic (like a & b, if-else, or flip-flops)
+
+➡ And replacing it with real, physical logic gates and cells that exist in a standard cell library (like the SKY130 library).
+
+What Does abc Do?
+abc is the tool in Yosys that:
+
+Optimizes your logic
+
+Replaces combinational logic (AND, OR, NOT, MUX, etc.)
+
+With real gates from the library (like NAND2, NOR3, etc.)
+
+But here's the catch:
+
+❌ abc can only handle combinational logic.
+✅ It does not understand flip-flops (sequential logic).
+
+Problem Without dfflibmap
+If your code has a D flip-flop like this:
+
+always @(posedge clk)
+  q <= d;
+
+Yosys knows it's a flip-flop, but abc can’t do anything with it —
+It will skip it, because abc doesn't know how to map flip-flops.
+
+What dfflibmap Does:
+dfflibmap solves this by:
+
+Looking inside the standard cell library
+
+Finding a real flip-flop cell (like sky130_fd_sc_hd__dfxtp_1)
+
+Replacing your Verilog flip-flop (from the always block)
+with the actual hardware flip-flop cell
+
+Now the flip-flop part is already mapped to real hardware.
+
+So abc can now:
+
+Safely ignore the flip-flops (they are already mapped)
+
+Focus on mapping and optimizing the remaining combinational logic
 ![image](https://github.com/user-attachments/assets/b27fc2b3-a173-4c96-b8fb-07c6b646563a)
 ![image](https://github.com/user-attachments/assets/b429cee9-1a12-4b84-b370-703278097aa5)
 
