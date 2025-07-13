@@ -434,4 +434,200 @@ This means:
 Yosys couldn’t find any actual logic (like adders, multipliers, or gates) to map.
 So there’s nothing for ABC to optimize or translate into hardware.
 
+<img width="1395" height="507" alt="image" src="https://github.com/user-attachments/assets/def7f527-d1d0-458f-b284-9d29b5b535db" />
+
+<img width="1837" height="1042" alt="image" src="https://github.com/user-attachments/assets/d0f51613-887e-479f-954c-c64d8f6e23d8" />
+
+<img width="1841" height="1030" alt="image" src="https://github.com/user-attachments/assets/f479e617-759e-41c2-b285-2c2fc2dd4b7e" />
+
+ What's Being Shown in the .dot Graph Window?
+This is a graphical representation of your RTL logic.
+
+🔹 Design Name: mult8
+Input: a
+
+Output: y
+
+Logic in middle: 2x 2:0 - 5:0
+
+ What does 2x 2:0 - 5:0 mean?
+This is shorthand for:
+y = a * 8
+
+Explanation:
+
+a[2:0] → a 3-bit input
+
+a * 8 → means shifting a left by 3 bits (since 2³ = 8)
+
+So your logic is simply:
+assign y = a << 3;
+And:
+
+y[5:0] → 6-bit output
+
+ This confirms what Yosys is showing: you're multiplying a 3-bit number a by 8 to get a 6-bit number y.
+
+ Why “Number of cells = 0” in the terminal?
+Because shifting left (a << 3) is a wiring operation, not actual computation:
+
+Hardware doesn't need gates for it
+
+It's just connecting the right bits to the right output pins
+
+So Yosys does not create any logic gates (AND, OR, MUX, etc.).
+
+<img width="1840" height="930" alt="image" src="https://github.com/user-attachments/assets/85d87b7c-d3a9-4fb4-9d11-f80deb826cc8" />
+
+<img width="1791" height="958" alt="image" src="https://github.com/user-attachments/assets/4b56ce33-eb35-460b-bc43-715879c7c214" />
+
+💡 What’s happening here?
+🔹 input [2:0] a;
+This declares a 3-bit input named a.
+Example: if a = 3'b101, it represents the number 5.
+
+
+🔹 output [5:0] y;
+This declares a 6-bit output named y.
+Why 6 bits? Because you're multiplying a (3 bits) by 8, which can produce up to a 6-bit result.
+
+🔹 assign y = {a, a};
+This is the key line. It's using Verilog concatenation.
+
+{a, a}
+
+This means:
+→ take the bits of a and stick them next to themselves.
+So if a = 3'b101 (which is 5 in decimal), then:
+
+{a, a} = {3'b101, 3'b101} = 6'b101101 = 45 (decimal)
+
+But this isn’t a real multiplication.
+
+Instead, it’s just doubling the bits.
+
+But here, Yosys is smart — it optimized your code y = a * 8 to y = {a, 3'b000} (which is the same as shifting a left by 3 bits), and further simplified it to:
+
+y = {a, a};
+
+This was safe because it gets the same result for what your logic wanted — a multiplication by 8.
+
+## Day 3 - Combinational and sequential optmizations
+
+## 1- Introduction to optimizations
+
+### (i) SKY130RTL D3SK1 L1 Introduction to optimisations part1
+
+#### Combinational Logic Optimization
+
+# Combinational Logic Optimisation Explained
+
+## What Is Combinational Logic Optimisation?
+
+Combinational logic optimisation is the process of refining digital circuits to achieve the most efficient design. The main goals are to reduce the **area** (the number of gates or components used) and **power consumption** of the logic circuit, making it more cost-effective and energy-efficient.
+
+## Key Concepts
+
+### 1. Squeezing the Logic
+- **Purpose:** To minimize the number of gates and the complexity of the logic.
+- **Benefits:** 
+  - **Area savings:** Fewer components are needed, reducing the physical size of the circuit.
+  - **Power savings:** Less hardware means lower power consumption.
+
+### 2. Constant Propagation
+- **Definition:** This is a direct optimisation technique where constant values (0 or 1) are substituted into the logic circuit wherever possible.
+- **How it works:** If a part of the circuit always receives a constant input, it can be simplified or removed entirely, making the design more efficient.
+
+### 3. Boolean Logic Optimisation
+- **Goal:** To simplify Boolean expressions that define the logic circuit.
+- **Techniques:**
+  - **Karnaugh Map (K-Map):** A graphical tool used to simplify Boolean expressions by grouping terms to eliminate variables.
+  - **Quine-McCluskey Method:** A tabular method that systematically reduces Boolean functions to their simplest form, suitable for computer implementation.
+
+## Why Optimise?
+
+- **Improved Performance:** Simpler circuits can operate faster.
+- **Lower Cost:** Fewer components mean reduced manufacturing costs.
+- **Energy Efficiency:** Optimised logic uses less power, important for battery-powered and large-scale systems.
+
+## Summary Table
+
+| Optimisation Technique  | Description                                      | Benefit                  |
+|------------------------|--------------------------------------------------|--------------------------|
+| Squeezing the Logic    | Minimizing logic gates and complexity            | Area & power savings     |
+| Constant Propagation   | Replacing variables with constants               | Direct simplification    |
+| K-Map                  | Graphical Boolean simplification                 | Easy for small circuits  |
+| Quine-McCluskey        | Systematic tabular Boolean simplification        | Suitable for automation  |
+
+By applying these optimisation techniques, digital designers can create circuits that are faster, smaller, and more energy-efficient.
+<img width="1286" height="707" alt="image" src="https://github.com/user-attachments/assets/6408bfaf-b2cd-4bb1-b2fe-c399aec88971" />
+
+Constant Propagation Example Explained
+This image demonstrates constant propagation, a digital logic optimization technique that simplifies circuits when some inputs are fixed at constant values.
+
+Original Logic Circuit
+Inputs: A, B, C
+
+<img width="610" height="82" alt="image" src="https://github.com/user-attachments/assets/b00b607a-ebc5-415c-b7cc-939bf612d996" />
+
+Gate Structure:
+
+First, A and B are ANDed.
+
+The result is ORed with C.
+
+The output is inverted (NOT gate).
+
+Applying Constant Propagation
+Given: A is tied to 0 (grounded).
+ <img width="507" height="122" alt="image" src="https://github.com/user-attachments/assets/96c64ead-6fed-4f1b-9995-573191da0c4b" />
+
+Result: The entire circuit simplifies to a single NOT gate with input C.
+
+Impact on Circuit Design
+
+Transistor Count: Reduced from 6 to 2.
+
+Area & Power: Both are reduced due to fewer components.
+
+Simplicity: The logic is easier to analyze and faster to operate.
+
+<img width="1288" height="717" alt="image" src="https://github.com/user-attachments/assets/8d466dab-cee9-4181-8f1d-2ee3d36dc447" />
+
+Key Takeaways
+Complex logic can often be reduced to simple gates using Boolean algebra.
+
+The original nested conditional logic is equivalent to just an XOR gate between a and c.
+
+Benefits of optimisation:
+
+Fewer gates: Only one XOR gate needed.
+
+Lower power and area: Simpler hardware implementation.
+
+Faster operation: Less propagation delay.
+
+### (ii) SKY130RTL D3SK1 L2 Introduction to optimisations part2
+
+<img width="1326" height="752" alt="image" src="https://github.com/user-attachments/assets/68b0c861-013a-468b-87e2-4bc73c698842" />
+
+This diagram demonstrates how constant propagation in sequential circuits allows for significant simplification. When certain inputs are fixed, the entire logic path can often be replaced with a constant output, making the circuit more efficient.
+
+
+What Is Happening in the Circuit?
+1. Constant Propagation in Sequential Logic
+The D flip-flop's D input is tied to a constant value (grounded, meaning D = 0).
+
+Reset (RST) is also shown as active, which forces the output 
+Q to 0.
+
+This means, regardless of the clock, the flip-flop will always output 0.
+
+2. Logic Gate Simplification
+The output 
+
+<img width="475" height="171" alt="image" src="https://github.com/user-attachments/assets/8d889350-7709-45a4-9713-8434600f2d0d" />
+
+### (iii) SKY130RTL D3SK1 L3 Introduction to optimisations part3
+
 
