@@ -162,7 +162,6 @@ now exit yosys and again open yosys.
 ![image](https://github.com/user-attachments/assets/8ad0696c-49ca-4fcb-b631-d4bdc494e584)
 We see only 1 AND gate in the diagram. we are not seeing submodule 2.
 
-sagar di vohti 
 ## 3- Various Flop Coding Styles and optimization
 ### (i)SKY130RTL D2SK3 L1 Why Flops and Flop coding styles part1
 Sagar di vohti 
@@ -171,11 +170,10 @@ Sagar di vohti
 ### (iii) SKY130RTL D2SK3 L3 Lab flop synthesis simulations part1
 ![image](https://github.com/user-attachments/assets/092ef44f-224f-45a8-a3eb-ec2ba519ce03)
 ![image](https://github.com/user-attachments/assets/ec086fae-c919-42f5-8452-e60890eea172)
-Sagar di vohti
 
 ![image](https://github.com/user-attachments/assets/77891de2-cc9e-4618-a47c-aec6634de09e)
 
-sagar di vohti
+
 ### (iv) SKY130RTL D2SK3 L4 Lab flop synthesis simulations part2
 Now let's synthesize the following D flipflops
 
@@ -311,11 +309,16 @@ So abc can now:
 
 Safely ignore the flip-flops (they are already mapped)
 
-Focus on mapping and optimizing the remaining combinational logic
+Focus on mapping and optimizing the remaining combinational logic.
+
+#### D FlipFlop with Synchronous reset
+
 ![image](https://github.com/user-attachments/assets/b27fc2b3-a173-4c96-b8fb-07c6b646563a)
 ![image](https://github.com/user-attachments/assets/b429cee9-1a12-4b84-b370-703278097aa5)
 
 ### (v) SKY130RTL D2SK3 L5 Interesting optimisations part1
+
+
 ![image](https://github.com/user-attachments/assets/7d7839d0-7f1b-4035-9708-ea952cb23417)
 ![image](https://github.com/user-attachments/assets/b3c3ca1c-dd80-4323-9b98-309d9917b22e)
 
@@ -328,9 +331,103 @@ Focus on mapping and optimizing the remaining combinational logic
 
 ### (vi) SKY130RTL D2SK3 L6 Interesting optimisations part2
 
+<img width="900" height="568" alt="image" src="https://github.com/user-attachments/assets/777df45f-91ac-444f-9e33-3ba94872f64c" />
+
+Multiplication by 
+
+2^n= shift left by n bits
+
+Left Side:
+a * 9 = a * (8 + 1)
+→ broken into:
+y = (a << 3) + a;
+
+This avoids using a multiplier circuit and instead uses:
+
+One shift
+
+One adder
+
+Which are cheaper and faster in RTL.
+
+Right Side Illustration:
+Shows the structure:
+
+a000   → a shifted by 3 → a * 8
+
+a * 9 = a * (8 + 1)
+      = (a * 8) + a
+      
+Multiplying by 8 is very easy in hardware — just shift a to the left by 3 bits (same as adding 3 zeros to the right).
+
+So:
+a * 8 → shift a left by 3 bits → like a000
+
+Then just add a to that shifted value.
+
+Example:
+Let’s say a = 3'b101 (which is 5 in decimal):
+
+a * 8 = 5 * 8 = 40
+
+Add a again: 40 + 5 = 45
+
+y = a * 9 = 45
+
+But you did it using:
+
+1 shift
+
+1 addition
+
+No big multiplier needed!
+
+Why This is Useful in RTL Design:
+In digital hardware (like chips or FPGAs):
+
+Multipliers take more space and power
+
+Shifts and additions are fast and easy
 
 
+<img width="1298" height="727" alt="image" src="https://github.com/user-attachments/assets/0811372c-8498-4a3b-ab43-2f96306f3758" />
 
+Reading and Analyzing the Design
 
+Top module: \mul2
+Yosys is analyzing your Verilog file and finds that the top module is called mul2.
+
+Printing Design Stats
+
+Number of wires: 2
+Number of wire bits: 7
+Number of public wires: 2
+Number of public wire bits: 7
+Number of memories: 0
+Number of cells: 0
+
+This shows:
+
+we have 2 wires, using a total of 7 bits
+
+No memories, no processes
+
+0 cells means no logic gates or flip-flops have been added yet.
+
+Found and reported 0 problems means No syntax or structural issues in your design. 
+
+ABC Mapping (Technology Mapping)
+
+yosys> abc -liberty ../my_lib/lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+This command tries to map your logic to real gates (NAND, AND, etc.) using the standard cell library.
+
+BUT...
+
+Extracted 0 gates and 0 wires to a netlist network with 0 inputs and 0 outputs.
+Don't call ABC as there is nothing to map.
+
+This means:
+Yosys couldn’t find any actual logic (like adders, multipliers, or gates) to map.
+So there’s nothing for ABC to optimize or translate into hardware.
 
 
