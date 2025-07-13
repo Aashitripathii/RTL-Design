@@ -630,4 +630,69 @@ The output
 
 ### (iii) SKY130RTL D3SK1 L3 Introduction to optimisations part3
 
+<img width="1298" height="740" alt="image" src="https://github.com/user-attachments/assets/dd24b794-5664-4ab1-b5f6-c35f6f0b3e18" />
 
+| Technique                | Key Features / Description                             | Applications                 | Advantages                         | Challenges / Disadvantages        |
+|--------------------------|--------------------------------------------------------|------------------------------|-------------------------------------|-----------------------------------|
+| State Optimization       | Removes unused or redundant FSM states                 | Finite state machines (FSMs) | Simplifies logic, reduces area      | May not be feasible for all FSMs  |
+| Cloning (Physical Aware) | Duplicates logic for optimal physical placement        | Large-scale digital circuits | Reduces wire delay, improves speed  | Increases area if overused        |
+| Retiming                 | Moves registers to balance combinational delays        | Sequential digital circuits  | Enables higher clock frequency      | Requires careful timing analysis  |
+
+Technique Explanations
+State Optimization:
+This process analyzes the state transition diagram of a finite state machine (FSM) to eliminate unnecessary or equivalent states. The result is a simpler FSM with fewer logic gates, which reduces the area and power consumption of the circuit.
+
+Cloning (Physical Aware):
+Cloning involves duplicating logic elements or registers and placing them closer to where they are needed in the physical layout of a chip. This minimizes the length of interconnect wires, reducing signal delay and improving the overall speed of the circuit. However, excessive cloning can increase the chip area.
+
+Retiming:
+Retiming is the process of repositioning registers (flip-flops) within a sequential circuit to balance the delays of combinational logic between them. This can significantly improve the maximum clock frequency by minimizing the longest (critical) path, but it requires detailed timing analysis to ensure functional correctness.
+
+These techniques are essential for optimizing digital designs, making them faster, more efficient, and cost-effective.
+
+## 2- Combinational logic optimizations 
+
+### (i) SKY130RTL D3SK2 L1 Lab06 Combinational Logic Optimisations part1
+
+<img width="1837" height="1021" alt="image" src="https://github.com/user-attachments/assets/c427222a-8a65-4366-8155-3271d4a0e7b8" />
+Listing files with opt in the name:
+ls *opt*
+
+This command lists all files in the current directory whose names contain opt.
+
+📄 You got:
+
+counter_opt2.v, multiple_module_opt2.v, opt_check2.v, etc.
+
+Testbenches like: tb_opt_check3.v
+
+<img width="1831" height="951" alt="image" src="https://github.com/user-attachments/assets/11dee40f-2c06-48fc-8f7c-0c37034ed6a8" />
+
+ Step-by-Step Breakdown
+1. Started Yosys
+   This opens the Yosys shell, where you can run synthesis commands interactively.
+
+2. Load Liberty File
+   
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+
+This loads the standard cell library (like a catalog of real hardware components).
+
+ Output says: Imported 418 cell types
+
+ These are logic gates, flip-flops, etc., available for your synthesized design.
+
+3. Load Verilog RTL Design
+
+read_verilog opt_check.v
+
+Loads your RTL file named opt_check.v.
+
+Parses it and generates an internal RTL representation.
+
+ Output: Successfully finished Verilog frontend.
+4. Run Synthesis
+synth -top opt_check
+
+
+ 
