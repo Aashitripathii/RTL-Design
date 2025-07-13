@@ -177,10 +177,51 @@ Sagar di vohti
 
 sagar di vohti
 ### (iv) SKY130RTL D2SK3 L4 Lab flop synthesis simulations part2
+Now let's synthesize the following D flipflops
+
+D FlipFlop with Asynchronous reset
+D FlipFlop with Synchronous reset
+D FlipFlop with Synchronous and Asynchronous reset
+D FlipFlop with Asynchronous set
+
+1) D FlipFlop with Asynchronous reset
+Why We Use dfflibmap in Synthesis Flow?
+
+When performing logic synthesis using tools like Yosys, we typically use a standard cell library (.lib file) that contains both combinational and sequential cells (like D flip-flops). However, in many design flows, flip-flops are provided in a separate library from the main logic gates.
+
+To handle this, we use the Yosys command:
+
+dfflibmap -liberty ../lib/your_flipflop_library.lib
+What dfflibmap Does?
+
+It maps generic D flip-flop constructs (like always @(posedge clk) in RTL) to specific standard cells in the library.
+This is essential for correct technology mapping — otherwise, the tool may not know which flip-flop cell to use.
+It ensures timing-aware synthesis using the correct sequential elements.
 ![image](https://github.com/user-attachments/assets/8b898372-2a8a-4bab-beae-454e1033434c)
 ![image](https://github.com/user-attachments/assets/88cacab1-ef82-4c82-b38e-5913a734b96c)
 ![image](https://github.com/user-attachments/assets/e8c3f90d-1051-4629-bb32-baacd98d5ded)
 ![image](https://github.com/user-attachments/assets/f0aa10bb-8ce1-4503-ae20-1ef0e06c851f)
+What we Wrote in Verilog:
+In your Verilog code, you wrote:
+if (reset)
+    q <= 0;
+This means:
+👉 "When reset is high (1), set q to 0."
+This is called active-high reset — it works when the signal is 1.
+What’s in the Standard Cell Library:
+But the flip-flops in the standard cell library are designed like this:
+👉 "When reset is low (0), set q to 0."
+This is called active-low reset — it works when the signal is 0.
+The Problem:
+we wrote an active-high reset,
+but the hardware cells available only support active-low reset.
+So they don’t match.
+What the Tool Does:
+To fix this mismatch, the synthesis tool automatically adds an inverter like this
+reset --> [Inverter] --> reset_n --> Flip-Flop (active-low reset)
+Now, when your reset signal is 1:
+🔁 the inverter turns it into 0,
+✅ which correctly triggers the flip-flop with an active-low reset.
 ![image](https://github.com/user-attachments/assets/2698a3e1-2ebf-42c3-ab8b-096e33dfe4fd)
 ![image](https://github.com/user-attachments/assets/df9a4900-29a0-4a81-9713-2638f3766323)
 ![image](https://github.com/user-attachments/assets/b27fc2b3-a173-4c96-b8fb-07c6b646563a)
