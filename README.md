@@ -746,3 +746,75 @@ Compare logic for debugging or analysis
 
 <img width="1827" height="915" alt="image" src="https://github.com/user-attachments/assets/25ce9860-654c-4dc1-8013-3d2a7666d054" />
 
+<img width="1918" height="1078" alt="image" src="https://github.com/user-attachments/assets/f4fa89bd-e31c-4e0a-95f6-6768ce72adbe" />
+
+
+<img width="1913" height="1078" alt="image" src="https://github.com/user-attachments/assets/16f27a89-ac40-44d7-804a-24ce6adc4549" />
+
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/a375776b-47ed-47de-9cbc-e1114d2cdcb1" />
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/aa8932c8-dd44-4c86-80a3-594f2ab09269" />
+
+Let's see what happens when we synthesize it.
+dfflibmap is not a Verilog command; it’s a step in the design process.
+
+It makes sure your design uses real, manufacturable flip-flops.
+
+This step is necessary before you can physically make your chip.
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/32160b89-40a6-449f-b326-7fa296fe0f55" />
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/bb0a711c-c715-400b-82a8-533045b0bdd8" />
+
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/e40f75cb-3bdc-4b38-95d0-7ce2e9faf86a" />
+
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/1c4104c9-eb50-4a29-b8a0-c60e0de82fe1" />
+
+
+### (ii) SKY130RTL D3SK3 L2 Lab07 Sequential Logic Optimisations part2
+
+Sagar divohti
+
+### (iii) SKY130RTL D3SK3 L3 Lab07 Sequential Logic Optimisations part3
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/d80372b1-41db-4005-aa23-4181293fc868" />
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/d72d25b1-0d2d-42d8-a064-a29f2ad6ae5c" />
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/2ce28da4-fb11-4b7a-8e17-01e04a1c308c" />
+
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/cbaf4144-c213-4866-b6de-722abbdf0d86" />
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/247710ea-bf54-4707-a97d-3efce87a7e29" />
+The previous case when we did the show without the abc. we saw both simply connected to reset. 
+Our expectation was the below diagram and we go the same.
+<img width="1272" height="543" alt="image" src="https://github.com/user-attachments/assets/383a4ce0-eeaf-43c5-875a-05f1d7383908" />
+
+## 4- Sequential optimzations for unused outputs
+
+### (i) SKY130RTL D3SK4 L1 Seq optimisation unused outputs part1
+we'll seeunused output optimization
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/1c8133e1-4f12-4125-8206-0fe00d1b691f" />
+
+<img width="1305" height="741" alt="image" src="https://github.com/user-attachments/assets/d392294e-5515-46f8-93f5-900b3320c605" />
+the above ckt is our demand.
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/5f0ae897-5f7e-4039-b9f4-b60e21ae79c4" />
+inabove picture we can see it is inferring only one d flip flop.
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/484597ae-f4dd-43c9-9418-e126511a0cf5" />
+we cn see there is only oneflip flop in above picture.
+
+
+### (ii) SKY130RTL D3SK4 L2 Seq optimisation unused outputs part2
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/3571c96a-fd34-4f3b-a43f-38351d3499f8" />
+
+follow the same steps to open gvim of Counter_opt2
+
+<img width="1160" height="566" alt="image" src="https://github.com/user-attachments/assets/b78920b2-066b-4129-945c-f16161ef00b3" />
+
+
