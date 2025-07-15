@@ -816,5 +816,394 @@ we cn see there is only oneflip flop in above picture.
 follow the same steps to open gvim of Counter_opt2
 
 <img width="1160" height="566" alt="image" src="https://github.com/user-attachments/assets/b78920b2-066b-4129-945c-f16161ef00b3" />
+complete from sagar di vohti
+
+# Day 4 - GLS, blocking vs non-blocking and Synthesis-Simulation mismatch
+
+## 1- GLS, Synthesis-Simulation mismatch and Blocking/Non-blocking statements
+
+### (i) SKY130RTL D4SK1 L1 GLSConceptsAndFlowUsingIverilog
+
+Introduction to Gate Level Simulation (GLS)
+When we write RTL code, we verify its functional correctness using a testbench. This process is known as RTL simulation.
+
+In Gate Level Simulation, we run the same testbench, but instead of simulating the RTL code, we simulate the netlist — the gate-level version of the design generated after synthesis.
+
+Why GLS is Needed
+Logical Verification After Synthesis Although the netlist is functionally equivalent to the RTL, synthesis tools may perform optimizations. GLS ensures that no logical errors were introduced during synthesis.
+
+Timing Verification RTL simulation is functional but does not model actual delays. GLS helps verify that the timing constraints are met, especially when run with delay annotation (typically from SDF files). This ensures that the circuit works as expected at the target clock frequency.
+
+Key Points
+Testbench Compatibility: Since the netlist has the same ports as the RTL, it fits directly into the RTL testbench without changes.
+
+Timing-Accurate Simulation: With delay annotation, GLS reflects the real-world delays caused by gates, wires, and interconnects.
+
+Summary
+Gate Level Simulation is the step where:
+
+We validate the post-synthesis design.
+Ensure logical correctness.
+Check timing with annotated delays.
+All using the same testbench written for RTL.
+It serves as the final check before proceeding to physical design or fabrication.
+
+### Gate Level Simulation (GLS) using Icarus Verilog (iverilog)
+
+<img width="3840" height="2160" alt="image" src="https://github.com/user-attachments/assets/c87e7edc-aff8-4ebe-a760-78467a4fa48d" />
+
+Components in the Setup:
+Design This is the synthesized netlist, which contains only logic gates.
+
+Gate Level Verilog Models These define the behavior of standard cells (like AND, OR, DFF, etc.). They are essential because the netlist uses gate-level primitives, and iverilog needs to understand their functionality during simulation.
+
+Testbench Provides stimulus to the design and checks the outputs. The same testbench used for RTL simulation can be reused, since the netlist ports match those of the RTL.
+
+iverilog Compiles the testbench, the synthesized gate-level netlist, and the gate-level Verilog models. It generates a VCD file (Value Change Dump), which records the transitions of signals during simulation.
+
+gtkwave This tool is used to visualize the signal waveforms from the VCD file. It helps in analyzing the behavior of the design over time.
+
+Key Note (from the Diagram)
+If the gate-level models are delay-annotated, then Gate Level Simulation can be used for timing validation, in addition to logic verification.
+
+Important Point
+The netlist alone is not sufficient for simulation — it does not describe the internal behavior of gates.
+Gate-level models must be included so that iverilog can understand and simulate the logic elements used in the netlist.
+
+Conclusion
+Gate Level Simulation using iverilog ensures:
+
+Functional correctness after synthesis.
+Timing verification (if delays are annotated).
+A clear path from RTL to hardware by simulating exactly what was synthesized.
+
+### (ii) SKY130RTL D4SK1 L2 Synthesis Simulation Mismatch
+
+Synthesis-Simulation Mismatch
+
+Missing Sensitivity List
+
+Blocking vs non blocking assignments
+
+Non standard verilog coding
+
+1) Missing Sensitivity List
+Issue Overview:
+This is a common source of simulation and synthesis mismatch in Verilog designs. The simulator responds to activity or changes on signals. If a signal is not listed in the sensitivity list of an always block, then changes in that signal will not trigger re-evaluation of the block during simulation.
+
+<img width="2010" height="2050" alt="image" src="https://github.com/user-attachments/assets/9b54b2e9-f882-4dc7-8bc9-495c46538e92" />
+
+module mux (
+    input i0, input i1,
+    input sel,
+    output reg y
+);
+
+always @(sel)  // Incorrect sensitivity list
+begin
+    if (sel)
+        y = i1;
+    else
+        y = i0;
+end
+
+endmodule
+
+In this code:
+
+The always block is only sensitive to sel.
+
+If i0 or i1 changes while sel remains constant, the block is not re-evaluated.
+
+As a result, y does not reflect the changes in i0 or i1, even though it should.
+
+This causes the output y to appear static or incorrectly held, which resembles latch-like behavior.
+
+It behaves as a latch instead of MUX.
 
 
+Simulator vs Synthesis Behavior:
+
+Simulator behaves based on signal changes. Since i0 and i1 are not in the sensitivity list, their changes are ignored.
+
+Synthesis tools, however, infer the correct multiplexer logic because they analyze the complete logic structure.
+
+This results in a mismatch: the synthesized hardware behaves correctly, but the simulated output does not.
+
+Corrected Code:
+
+always @(*)  // Correct sensitivity list
+
+begin
+
+    if (sel)
+    
+        y = i1;
+        
+    else
+    
+        y = i0;
+        
+end
+
+Using @(*) instructs the simulator to automatically include all right-hand side signals (sel, i0, i1) in the sensitivity list.
+
+This ensures that the always block is evaluated whenever any of the involved signals change, leading to correct and expected simulation behavior.
+
+### (iii) SKY130RTL D4SK1 L3 Blocking And NonBlocking Statements In Verilog
+
+Blocking (=) vs Non-blocking (<=) Assignments in Verilog
+1. Inside an always block:
+Blocking (=): Executes statements sequentially — each statement blocks the next until it's done. This models combinational logic or procedural code flow.
+
+Non-blocking (<=): All right-hand side (RHS) expressions are evaluated in parallel at the start of the time step, and the values are assigned to the left-hand side (LHS) at the end of the time step. This models sequential logic (flip-flops).
+
+2. Caveats with Blocking Assignments in Sequential Logic
+Let’s analyze two versions of the code provided:
+
+Correct Use of Blocking (Modeling Two DFFs):
+
+module code (
+    input clk,
+    input reset,
+    input d,
+    output reg q
+);
+
+reg q0;
+
+always @(posedge clk, posedge reset)
+begin
+    if (reset)
+    begin
+        q0 = 1'b0;
+        q = 1'b0;
+    end
+    else
+    begin
+        q = q0;
+        q0 = d;
+    end
+end
+
+endmodule
+
+In the else block:
+
+q = q0; is executed first
+
+Then q0 = d; is executed
+
+Since q gets the previous value of q0, this mimics two separate flip-flops:
+
+q0 stores d
+
+q stores the previous q0
+
+This correctly models two D flip-flops.
+
+
+Incorrect Ordering – Leads to Single Flip-Flop:
+
+module code (
+    input clk,
+    input reset,
+    input d,
+    output reg q
+);
+
+reg q0;
+
+always @(posedge clk, posedge reset)
+begin
+    if (reset)
+    begin
+        q0 = 1'b0;
+        q = 1'b0;
+    end
+    else
+    begin
+        q0 = d;
+        q = q0;
+    end
+end
+
+endmodule
+
+In this version:
+
+q0 = d; is executed before
+
+q = q0; — now q just copies d because q0 was already updated.
+
+So both q and q0 carry the same value → only one flip-flop inferred.
+
+This leads to incorrect synthesis where only one DFF is inferred, despite needing two.
+
+Best Practice:
+Use non-blocking (<=) for sequential logic (in always @(posedge clk) blocks).
+Use blocking (=) only for combinational logic (in always @(*) blocks).
+
+This ensures clarity in simulation and synthesizes accurate and intended hardware.
+
+### (iv) SKY130RTL D4SK1 L4 Caveats With Blocking Statements
+
+Version 1 – With Non-blocking Assignments
+
+module code (
+    input clk,
+    input reset,
+    input d,
+    output reg q
+);
+
+reg q0;
+
+always @(posedge clk or posedge reset)
+begin
+    if (reset)
+    begin
+        q0 <= 1'b0;
+        q <= 1'b0;
+    end
+    else
+    begin
+        q <= q0;
+        q0 <= d;
+    end
+end
+
+endmodule
+
+
+Explanation:
+
+When non-blocking assignments (<=) are used, both q <= q0; and q0 <= d; are evaluated in parallel. The right-hand side (RHS) values are captured first, and the assignments happen at the end of the clock edge.
+
+Therefore:
+
+q receives the previous value of q0
+q0 receives the new value of d
+This infers two D flip-flops:
+
+One for storing d (q0)
+One for storing q0 (q)
+This properly represents a two-stage pipeline.
+
+### Version 2 – Reversed Assignment Order
+
+module code (
+    input clk,
+    input reset,
+    input d,
+    output reg q
+);
+
+reg q0;
+
+always @(posedge clk or posedge reset)
+begin
+    if (reset)
+    begin
+        q0 <= 1'b0;
+        q <= 1'b0;
+    end
+    else
+    begin
+        q0 <= d;
+        q <= q0;
+    end
+end
+
+endmodule
+
+Explanation:
+
+Although the order of statements is reversed, non-blocking assignments ensure correctness.
+
+Both RHS expressions are evaluated before any assignment:
+
+q0 gets the current value of d
+q gets the previous value of q0
+This again infers two flip-flops, and the behavior is consistent with expected pipeline logic.
+
+Conclusion:
+Using non-blocking assignments (<=) in sequential logic:
+
+Ensures the right number of flip-flops are inferred.
+
+Maintains logical correctness regardless of statement order.
+
+Prevents unintended synthesis mismatches.
+
+Leads to clean simulation results and consistent behavior across design tools.
+
+This is the recommended style for writing clocked logic in Verilog.
+
+### synthesis-simulation mismatch
+
+The code you provided illustrates a synthesis-simulation mismatch caused by using blocking assignments (=) in the wrong order.
+
+Objective:
+Implement the logic: y = (a | b) & c That is, the output of an OR gate with inputs a and b is connected to one input of an AND gate, and c is the other input.
+
+### Version 1 – Incorrect Order (Causes Mismatch)
+
+module code (
+    input a, b, c,
+    output reg y
+);
+
+reg q0;
+
+always @(*)
+begin
+    y = q0 & c;   // Uses old value of q0
+    q0 = a | b;   // New value computed after y
+end
+
+endmodule
+
+Problem:
+y is computed before q0 is updated.
+
+Since blocking assignments execute sequentially, q0 still holds the previous value when used in y = q0 & c.
+
+In simulation, this behaves as though q0 is a register or flip-flop, even though there's no clock — this is not synthesizable as intended.
+
+Synthesis tools will still treat q0 as combinational, leading to a mismatch between simulation and synthesized hardware.
+
+
+### Version 2 – Correct Order
+
+module code (
+    input a, b, c,
+    output reg y
+);
+
+reg q0;
+
+always @(*)
+begin
+    q0 = a | b;   // Compute q0 first
+    y = q0 & c;   // Then use q0 to compute y
+end
+
+endmodule
+
+Explanation:
+Here, q0 is assigned before it is used to compute y.
+
+Since this is combinational logic and uses blocking assignments in the correct order, the circuit will simulate and synthesize correctly.
+
+The synthesized circuit will now have:
+
+One OR gate computing q0 = a | b
+
+One AND gate computing y = q0 & c
+
+This matches the intended logic y = (a | b) & c.
+
+Best Practice: When using blocking assignments in combinational always @(*) blocks, always ensure the data dependencies are ordered correctly. Alternatively, avoid intermediate variables if not needed, or write the logic in a single expression.
+
+## GLS, Synthesis-Simulation mismatch and Blocking/Non-blocking statements
