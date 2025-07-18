@@ -1680,3 +1680,186 @@ Here’s a comparison in tabular form:
 
 This distinction is fundamental in writing correct and synthesizable Verilog code and is essential for digital hardware design.
 
+Example: For Loop
+
+2:1 mux
+
+always @(*) begin
+
+ case (sel)
+ 
+    1'b0 : y = i0;
+    
+    1'b1 : y = i1;
+    
+ endcase
+ 
+end
+
+
+
+4:1 mux
+
+ always @(*) begin
+ 
+  case (sel)
+  
+     3'b00 : y = i0;
+     
+     3'b01 : y = i1;
+     
+     3'b10 : y = i2;
+     
+     3'b11 : y = i3;
+     
+  endcase
+  
+ end
+
+
+
+ 32:1 mux
+ 
+always @(*) begin
+
+ case (sel)
+ 
+    5'b00000 : y = i0;
+    
+    5'b00001 : y = i1;
+    
+    5'b00010 : y = i2;
+    
+    5'b00011 : y = i3;
+    
+    .
+    
+    .
+    
+    .
+    
+    5'b1111 : y = i31;
+    
+ endcase
+ 
+end
+
+
+But we can't write big codes like this, this is where the power of "Blocking statements" comes into picture. A blocking statement in Verilog is a type of procedural assignment that executes sequentially, just like C-style code. It uses the = assignment operator.
+
+Let us take the example of 32:1 mux;
+
+#### assumption: input 32:1 bus
+
+integer i
+
+always @ (*)
+
+ begin
+ 
+   for(i = 0; i < 32; i = i+1) begin
+   
+     if(i==sel)
+     
+     y = inp[i];
+     
+  end
+  
+end
+
+Therefore it is easy and short to implement 32:1 mux or even bigger muxes using for loop.
+
+### Sky130RTL D5SK4 L2 For Loop and For Generate part2
+
+Example: 1:8 DEMUX Using Behavioral for Loop
+Let's consider a 1:8 demultiplexer (DEMUX) example.
+
+Inputs:
+
+ip → Input signal
+
+sel (3 bits) → Select line
+
+Outputs:
+
+op_bus[7:0] → 8-bit output bus
+
+Here’s how we can implement it using a behavioral for loop:
+
+integer i;
+
+always @(*) begin
+
+    op_bus = 8'b0; // Clear all outputs
+    
+    for (i = 0; i < 8; i = i + 1) begin
+    
+        if (i == sel)
+        
+            op_bus[i] = ip;  // Pass input to selected output
+            
+    end
+    
+end
+
+This loop runs during simulation and behaves like software, assigning values to outputs based on the select input.
+
+Using generate for Loop in Structural Design
+Now imagine you want to instantiate a block of hardware (like a module or cell) 500 times. Writing that manually 500 times is not practical.
+
+To solve this, Verilog provides a generate for loop, which is used for structural replication of hardware during compilation (elaboration).
+
+Key Points:
+It is used to generate multiple instances of hardware units.
+
+Uses a genvar (not integer) as the loop variable.
+
+The loop is written outside always blocks.
+
+Common in repetitive hardware structures like arrays of registers, adders, MUXes, etc.
+
+genvar j;
+
+generate
+
+  for (j = 0; j < 500; j = j + 1) begin : block_name
+    my_module U (.in(data_in[j]), .out(data_out[j]));
+    
+  end
+  
+endgenerate
+
+<img width="410" height="346" alt="image" src="https://github.com/user-attachments/assets/c6d00c13-e293-48b4-915a-8636db642b7c" />
+
+
+### Sky130RTL D5SK4 L3 For Loop and For Generate part3
+
+We will be looking at the files mux_generate.v.
+
+<img width="1036" height="492" alt="image" src="https://github.com/user-attachments/assets/e8381620-2fdc-4bd4-b462-5a89b95d5414" />
+
+It is 4:1 multiplexer with 4 inputs, 2 bit select line and an output. We are making a bus i_int().
+
+Certainly! Here's an improved and slightly more polished **tabular version** of your explanation, with clearer formatting and simplified wording:
+
+| **Code Line**                        | **Explanation**                                                                 |
+|-------------------------------------|---------------------------------------------------------------------------------|
+| `module mux_generate ...`           | Declares the module `mux_generate` with 4 inputs (`i0` to `i3`), a 2-bit select line `sel`, and one output `y`. |
+| `wire [3:0] i_int;`                 | Declares a 4-bit wire to bundle all 4 inputs into a single bus for easier handling. |
+| `assign i_int = {i3, i2, i1, i0};`  | Combines the inputs into `i_int`, where `i3` is the most significant bit (MSB) and `i0` is the least significant bit (LSB). |
+| `integer k;`                        | Declares the loop variable `k`, used in the upcoming `for` loop.               |
+| `always @(*)`                       | Defines a combinational block that triggers whenever any input changes.        |
+| `for (k = 0; k < 4; k = k + 1)`     | Iterates over all 4 bits of the `i_int` bus (from `i0` to `i3`).               |
+| `if (k == sel)`                     | Compares the loop index `k` with the selected value `sel`. If they match, the corresponding input is selected. |
+| `y = i_int[k];`                     | Assigns the selected input from `i_int[k]` to output `y`.                      |
+
+<img width="841" height="358" alt="image" src="https://github.com/user-attachments/assets/871dd722-7f2c-4999-8f9e-d1f2e020a484" />
+
+iverilog mux_generate.v tb_mux_generate.v
+
+./a.out
+
+gtkwave mux_generate.vcd
+
+<img width="1028" height="477" alt="image" src="https://github.com/user-attachments/assets/1a2b50bd-9bf4-47fd-80f8-cfd6bc387e4d" />
+
