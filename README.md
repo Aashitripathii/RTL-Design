@@ -2031,3 +2031,25 @@ show: Displays the synthesized gate-level schematic.
 
 ### Sky130RTL D5SK5 L2 Lab For and For Generate part2
 
+Certainly! Here's a cleaner and more formal reframing of your content:
+
+## 📘 Next Example: Demultiplexers
+
+In this example, we will explore two different ways to implement a **Demultiplexer (DEMUX)** in Verilog.
+
+### 🔧 To begin, open both files for comparison:
+
+```bash
+gvim demux_case.v -o demux_generate.v
+```
+
+This command opens the two files side-by-side using `gvim`:
+
+- `demux_case.v` – Implements the DEMUX using a **`case` statement**
+- `demux_generate.v` – Implements the DEMUX using a **`for` loop**
+
+These files will help you understand the **difference in style and structure** between using a case-based approach vs. a loop-based (scalable) approach for implementing digital logic.
+
+
+<img width="1021" height="483" alt="image" src="https://github.com/user-attachments/assets/4fa48562-51d9-4f03-9d88-84375c51d10c" />
+
