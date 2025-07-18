@@ -1206,4 +1206,35 @@ This matches the intended logic y = (a | b) & c.
 
 Best Practice: When using blocking assignments in combinational always @(*) blocks, always ensure the data dependencies are ordered correctly. Alternatively, avoid intermediate variables if not needed, or write the logic in a single expression.
 
-## GLS, Synthesis-Simulation mismatch and Blocking/Non-blocking statements
+## Labs on GLS and Synthesis-Simulation Mismatch
+
+### (i) SKY130RTL D4SK2 L1 Lab GLS Synth Sim Mismatch part1
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/4a5df2fa-b409-42c4-9659-2e2f66c8bb6f" />
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/d5d04673-173a-458f-8fc5-1b0802e97ace" />
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/778640be-d980-43ac-9da3-ebaa3b6faa4a" />
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/209d39cd-4227-40e7-ba65-4a61fe3e2011" />
+
+Invoke yosys after gtkwake command.
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/e096dfd3-3b3c-4577-9944-fb81f3079134" />
+
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/b1c1fb1d-d7cb-469b-818b-47e1c3b208f1" />
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/8e2a664f-3fbd-42b2-aab8-fbfcf0ffb8d2" />
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/94f8fcca-cd24-47d4-87cd-797fd06ce34d" />
+
+
+### (ii) SKY130RTL D4SK2 L2 Lab GLS Synth Sim Mismatch part2
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/f0e6776a-c02f-4562-83dd-3e35722ef194" />
+
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/f26da0c3-c172-4784-b563-319d522f1a65" />
+
+
