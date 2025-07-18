@@ -2053,3 +2053,21 @@ These files will help you understand the **difference in style and structure** b
 
 <img width="1021" height="483" alt="image" src="https://github.com/user-attachments/assets/4fa48562-51d9-4f03-9d88-84375c51d10c" />
 
+
+
+We will use the power of "Blocking statements". we have assigned all the outputs to '00' as y_int = 8'b0 and the input line is routed to output depending upon the select line.
+
+The initialization step y_int = 8'b0 is very important as it will also avoid "Inferred latches".
+The "case" statement code is bulky and may increase if the required mux or demux is of higher bits.
+Whereas in case of "For Loop", the code is small comparatively.
+
+Now let us try out the simulation and synthesis for both "case" and "for loop":
+
+<img width="1032" height="472" alt="image" src="https://github.com/user-attachments/assets/106cd6fa-9bba-4a6c-87bd-7b280555a7d4" />
+
+We can see here, for the select line to be selected the output follows input i rest it is zero.
+Similarly, we will get for "for loop" simulation.
+
+<img width="1028" height="462" alt="image" src="https://github.com/user-attachments/assets/4f8d14a7-8eb0-47ab-babe-0b2402a071bc" />
+
+
