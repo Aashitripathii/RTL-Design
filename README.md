@@ -1361,26 +1361,39 @@ begin
      end
  endcase
 end
-# with deafult we avoid inferred latches
+ with deafult we avoid inferred latches
 
 When using a case statement in Verilog to assign values to multiple outputs, you must assign values to all outputs in every case branch.
 If any output is missing an assignment, the synthesis tool may infer a latch to "remember" the previous value. This is usually unintended and can cause incorrect hardware behavior.
 
  Bad Example (Partial Assignment – Latch Inferred)
+ 
 always @(*) begin
   case (sel)
+  
     2'b00: begin
+    
       out1 = 1;
+      
       // Missing assignment for out2
     end
+    
     2'b01: begin
+    
       out1 = 0;
+      
       out2 = 1;
+      
     end
+    
     default: begin
+    
       out1 = 0;
+      
       // Missing assignment for out2 again
+      
     end
+    
   endcase
 end
 
@@ -1394,23 +1407,40 @@ Synthesis tool will create a latch to preserve the previous value of out2 — th
 
 *reg [1:0] sel;
 reg x, y;
+
 always @ (*)
+
  begin
+ 
     case (sel)
+    
         2'b00: begin
+        
            x = a;
+           
            y = b;
+           
         end
+        
         2'b01: begin
+        
            x = c;
+           
         end
+        
         default: begin
+        
            x = d;
+           
            y = b;
+           
         end
+        
     endcase
+    
  end*
-# We have assigned the value for select line '0', but when select line is '1' only value for x is assigned and not y.
+ 
+We have assigned the value for select line '0', but when select line is '1' only value for x is assigned and not y.
 
 Partial assignment leads to inferred latches.
 
@@ -1423,3 +1453,230 @@ Partial assignment leads to inferred latches.
 We will see how the synthesis and simulator behaves when there is "incomplete if and case".
 
 Our files required here are inside *incomp*
+
+<img width="1031" height="430" alt="image" src="https://github.com/user-attachments/assets/376d376a-fdf7-47ae-b07a-f790e2f9a8a0" />
+
+We will open all the files; gvim *incomp* -o and start with "incomplete if";
+
+<img width="1035" height="491" alt="image" src="https://github.com/user-attachments/assets/7eee8c16-6705-41b2-9f6b-198cbcdf1f12" />
+
+Let us look at the harware, here if always translates into a 'Mux'. So here select line is i0, if we i0 is '1' output is 1 but else part is missing so i0 = 0, it will be latched.
+<img width="356" height="257" alt="image" src="https://github.com/user-attachments/assets/05ec5230-50f1-4b5c-829f-b597a4f129c7" />
+
+The behaviour of this mux is similar to D-latch which latch enable as i0. It's a poselatch. Whenever i0 is present i1 is seen on y, whenever absent it latches on to it's value.
+
+<img width="253" height="192" alt="image" src="https://github.com/user-attachments/assets/43dab7a3-c604-4e3d-9481-5ac052ea8804" />
+
+Simulation
+
+iverilog incomp_if.v tb_incomp_if.v
+
+./a.out
+
+gtkwave tb_incomp_if.vcd
+
+<img width="1031" height="462" alt="image" src="https://github.com/user-attachments/assets/26875659-b8f1-4558-be48-6aa8e91203d4" />
+
+Synthesis
+
+yosys
+
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+
+read_verilog incomp_if.v
+
+synth -top incomp_if
+
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+
+show
+
+<img width="980" height="469" alt="image" src="https://github.com/user-attachments/assets/f1ec753a-b941-4cc9-8c54-21c6ea0fd221" />
+
+<img width="502" height="416" alt="image" src="https://github.com/user-attachments/assets/4175488d-be8e-4147-a362-0da07a870308" />
+
+### (ii) Sky130RTL D5SK2 L2 Lab Incomplete IF part2
+
+Considering the hardware, it has two mux where else past is missing, so it will latch as shown below.
+
+<img width="477" height="267" alt="image" src="https://github.com/user-attachments/assets/e970ca4d-6a85-4702-8f7c-c1423cb1c5c2" />
+
+It will represent a D-latch where EN is when any of i0 and i2 can exist, so it will be ORed. At the input there will be a combined circuit of the multiplexer with values of i0, i1, i2 and i3.
+
+<img width="732" height="347" alt="image" src="https://github.com/user-attachments/assets/2d6a9fbd-3aa1-469e-923e-2f5a390b7448" />
+
+<img width="1002" height="482" alt="image" src="https://github.com/user-attachments/assets/e7dec92b-c7cd-44d3-af4c-4754e2292622" />
+
+We can see whenever i0 = 1--> Output 'y' is following i1.
+
+When i0 = 0 --> it looks towards i2:
+
+When i2 is low --> output is constant
+
+when i2 is high --> output starts following i3
+
+Now let's synthesize:
+
+<img width="1027" height="413" alt="image" src="https://github.com/user-attachments/assets/d82daf35-b737-4282-a13c-cf9bf76e663a" />
+
+## Lab on "Incomplete overlapping case"
+
+### (i) Sky130RTL D5SK3 L1 Lab Incomplete overlapping Case part1
+
+Here we will discuss about the "case" statements labs in detail.
+
+Let's open all the required files; gvim comp_case.v -o incomp_case.v -o partial_case_assign.v -o bad_case.v.
+
+<img width="1032" height="508" alt="image" src="https://github.com/user-attachments/assets/bafadffe-803f-4f40-b665-1dd48b00170b" />
+
+First, we will look into incomp_case.v
+
+<img width="1032" height="492" alt="image" src="https://github.com/user-attachments/assets/34dfbb3f-05d1-4c78-8b23-dbf3c10e46ef" />
+
+According to the code it is clear that if 'select' is '00', i0 will be selected and for select line '01' i1 will be selected. But for '10' and '11' there is no input and also default statement is missing, so it will latch. Also the enabling condition for latch is sel[1]'.
+
+<img width="337" height="272" alt="image" src="https://github.com/user-attachments/assets/431a5792-d418-47f8-8074-a4158703d1fe" />
+
+The logic we are expecting is a D-latch, when the select[1] is '0' the output is same as input, but when selct[1] is '1' the output is latched.
+
+<img width="721" height="352" alt="image" src="https://github.com/user-attachments/assets/305bd7fa-fe1c-4ce9-a4a4-f00ca007bcde" />
+
+Let us do the functional simulation:
+
+iverilog incomp_case.v tb_incomp_case.v
+
+./a.out
+
+gtkwave incomp_case.vcd
+
+<img width="1027" height="496" alt="image" src="https://github.com/user-attachments/assets/f702c667-03fe-4ed1-860b-92362d5bb2fa" />
+
+When select is '00' y is following i0
+
+When select is '01' y is following i1
+
+The moment select is becoming '11' or '10', y is latching to that value.
+
+Let us now to the synthesis:
+
+yosys
+
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+
+read_verilog incomp_case.v
+
+synth -top incomp_case
+
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+
+show
+
+<img width="1037" height="502" alt="image" src="https://github.com/user-attachments/assets/9f195b64-5f98-4340-b2a8-089a3a6e0f10" />
+
+
+<img width="1032" height="410" alt="image" src="https://github.com/user-attachments/assets/dc36dfdf-2745-473d-88ce-8bbb7b30226f" />
+
+### (ii) Sky130RTL D5SK3 L2 Lab Incomplete overlapping Case part2
+
+Now we will look into the complete case; comp_case.v file. We can see here everything is same except that we added default.
+
+<img width="1031" height="501" alt="image" src="https://github.com/user-attachments/assets/896d5b7a-5181-4865-9e2f-7a56cb90094b" />
+
+Simulation We can see when select is '10' or '11' it is exactly following i2. There is no latching action.
+
+<img width="994" height="477" alt="image" src="https://github.com/user-attachments/assets/84e56f7c-3d82-4c67-b1fd-1d2b3a7eee40" />
+
+
+Upon synthesis we can see that there is no latch present.
+
+<img width="996" height="422" alt="image" src="https://github.com/user-attachments/assets/28ddb71f-9ccf-42bf-98b2-d35ee41c7b92" />
+
+Let us look at the partial_case_assign.v file as well.
+
+<img width="1037" height="497" alt="image" src="https://github.com/user-attachments/assets/dc071a75-8c26-4ee0-8edb-b61f0d67c5ce" />
+
+### (iii) Sky130RTL D5SK3 L3 Lab Incomplete overlapping Case part3
+
+let us synthesis partial_case_assign.v
+<img width="1028" height="497" alt="image" src="https://github.com/user-attachments/assets/b892da16-fbf0-43e4-8ac2-5e9d285b1da2" />
+We can see here in the path of 'y' there is no latch but in the path of 'x' there is a latch.
+
+<img width="1031" height="457" alt="image" src="https://github.com/user-attachments/assets/d3b695b6-fa89-430f-af83-8dad46f7e6ef" />
+
+Let us see bad_case.v file.
+In 'case' statements there can be execution of two logics at the same time which casues mismatch if there is a bad case.
+
+<img width="1035" height="492" alt="image" src="https://github.com/user-attachments/assets/a3e13466-8e26-43c7-ba8c-f59bdeb15597" />
+
+
+Here, for 2'b10 i2 is assigned and for input 2'b1? i3 is assigned. So simulator will try to execute both at the same time. Simulations will be getting confused with each other.
+
+<img width="1032" height="503" alt="image" src="https://github.com/user-attachments/assets/a304cff2-6c7a-430c-8f29-6b767daa04c7" />
+
+We can clearly see when the select is '11' the output is getitng latched, the simulator is not able to decide the output, it is getting confused whar to execute.
+
+### (iv) Sky130RTL D5SK3 L4 Lab Incomplete overlapping Case part4
+
+Since the code is code is complete, we will not ahve an inferred latch here but we are having problem with execution as it is a bad case.
+
+Let us Synthesize the code:
+
+  yosys
+
+  read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+
+  read_verilog bad_case.v
+
+  synth -top bad_case
+
+  abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+
+  write_verilog -noattr bad_case_net.v
+
+  show
+
+  After synthesis we can observe that there are no latches as we expected.
+
+  <img width="1027" height="501" alt="image" src="https://github.com/user-attachments/assets/8f53a2b3-7200-4df9-9627-63d65c0ff261" />
+
+ read the standard cell models, netlist and the test bench
+iverilog ../my_lib/verilog_model_primitives.v ../my_lib/verilog_model/sky130_fd_sc_hd.v bad_case_net.v tb_bad_case.v
+
+./a.out
+
+gtkwave tb_bad_case.vcd
+
+<img width="1033" height="398" alt="image" src="https://github.com/user-attachments/assets/f8a28a9f-a73c-467c-b9a1-d742273c2ca0" />
+
+Now we can see that at select line '11' it is not constant and behaving as i3. Hence there is no latching action here.
+
+
+<img width="1033" height="506" alt="image" src="https://github.com/user-attachments/assets/13bfffab-c988-4e87-a78b-1d4676915566" />
+
+## for loop and for generate
+
+### Sky130RTL D5SK4 L1 For Loop and For Generate part1
+
+
+## Difference Between `for` Loop (Behavioral) and `generate for` Loop (Structural) in Verilog
+
+Here’s a comparison in tabular form:
+
+| Feature                  | `for` Loop (Behavioral)                              | `generate for` Loop (Structural)                    |
+|--------------------------|------------------------------------------------------|-----------------------------------------------------|
+| Usage Context            | Inside procedural blocks (`always`, `initial`, etc.) | At the module level, outside procedural blocks      |
+| Purpose                  | Repeats actions sequentially at simulation time      | Instantiates multiple blocks/wires at elaboration   |
+| Interpretation           | Executes statements on each loop iteration           | Expands code during compilation/elaboration         |
+| Synthesis                | May or may not be synthesizable (depends on logic)   | Always synthesizable for creating repetitive logic  |
+| Example Code             | `for (i=0; i<N; i=i+1) a[i] = b[i] & c[i];`          | `genvar i; generate for (i=0; i<N; i=i+1) ... endgenerate` |
+| When Runs                | During simulation (run-time)                         | During elaboration (before simulation/synthesis)    |
+| Use Case                 | Manipulating variables, writing testbenches, etc.    | Generating repeated hardware structures (e.g., adders, registers) |
+| Variable Type            | Uses regular integers (e.g., `integer i;`)           | Uses `genvar` special variable type                 |
+
+### Key Points
+
+- **Behavioral `for` loops** describe actions performed in time and are used *within* procedural (sequential) code blocks.
+- **`generate for` loops** define actual structural hardware duplication during elaboration, creating multiple instances of logic in the hardware design.
+
+This distinction is fundamental in writing correct and synthesizable Verilog code and is essential for digital hardware design.
+
