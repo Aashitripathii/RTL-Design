@@ -1237,4 +1237,189 @@ Invoke yosys after gtkwake command.
 
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/f26da0c3-c172-4784-b563-319d522f1a65" />
 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/e34905ed-9eda-4c47-8038-31726e815348" />
 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/5ce632b3-5c46-4a69-ae02-57c14c0b0ad9" />
+
+SAGAR DI VOHTI LAST GTKWAVE PHOTOS
+
+## Labs on synth-sim mismatch for blocking statement
+
+## (i) SKY130RTL D4SK3 L1 Lab Synth sim mismatch blocking statement part1
+
+
+
+
+# Optimization in Synthesis
+
+## If Case constructs
+### (i) Sky130RTL D5SK1 L1 IF CASE Constructs part1
+
+Here we will see about 'IF' and 'CASE' statements and danger with 'CASE' statements.
+
+if:
+It gives the priority logic
+
+Evaluates sequentially: top-to-bottom priority
+
+Syntax:
+if (condition)
+ begin
+     statement;
+ end
+else (condition)
+ begin
+     statement;
+ end
+
+ <img width="437" height="356" alt="image" src="https://github.com/user-attachments/assets/3a1dbf7a-3f61-44db-bafb-f56746bba960" />
+
+Danger/Caution with 'if': Called as "Inferred latches" We don't intend to put a latch, but this happens because of bad coding. Comes with incomplete "if" statement.
+
+e.g.
+if (condition1)
+    y=a;
+else if (condition2)
+    y=b;
+end
+# There is no "else" condition specified
+Now if condition1 not happens and condition2 also not happens then the hardware will remain incomplete. Therefore the tool will try to Latch. It is very dangerous and should be avoided.
+<img width="373" height="340" alt="image" src="https://github.com/user-attachments/assets/f53032e2-5e3c-41b4-902b-68d9ef958bf1" />
+
+### (ii) Sky130RTL D5SK1 L2 IF CASE Constructs part2
+
+Let us take an example of a Counter;
+always @ (posedge clk, posedge reset)
+ begin
+   if (reset)
+          count <= 3'b00;
+   else if (en)
+          count <= count + 1;
+ end
+# although it is incomplete code but it is correct
+
+Let' look at the hardware. (Always look for the harware).
+When the 'enable' pin is ON, the counter is count+1 but when it is OFF, counter latches the value to previous value. So this is intended behaviour.
+
+Inferred Latches is fine for Sequential Circuits, but not fine for Combinational circuits.
+
+<img width="421" height="347" alt="image" src="https://github.com/user-attachments/assets/317b121a-49fa-4117-b6ab-cde39d4e243a" />
+
+### Case :
+'if' and 'case' are assigned inside always block; they should be assigned under reg value.
+
+Used to implement multi-way branching, like a switch-case in C.
+
+Good for implementing multiplexers, state machines, and decoders.
+
+All case branches are evaluated simultaneously (unlike if).
+
+You should always include a default case to avoid unintended latch inference.
+
+ always @(sel or c1 or c2)
+begin
+  case (sel)
+      2'b00: out = c1;
+      2'b01: out = c2;
+      default: out = 1'b0;
+  endcase
+end
+
+<img width="291" height="277" alt="image" src="https://github.com/user-attachments/assets/53892139-20f1-4d50-b0cc-f4530246da60" />
+
+Caveats with case:
+1) Incomplete case --> Lead to "Inferred Latches" e.g.
+   reg [1:0] sel ; 
+always @(*) 
+begin
+ case (sel)
+     2'b00: begin
+         out = c1;
+     end
+     2'b01: begin
+         out = c2;
+     end
+ endcase
+end
+# rest of the pins will be latched to the output
+
+<img width="307" height="267" alt="image" src="https://github.com/user-attachments/assets/13ce8976-9358-45dd-a57d-2d2aba1d52c0" />
+
+To avoid this we write code case with default
+reg [1:0] sel ;
+always @(*) 
+begin
+ case (sel)
+     2'b00: begin
+         out = c1;
+     end
+     2'b01: begin
+         out = c2;
+     end
+     default: begin
+         out = 1'b0;
+     end
+ endcase
+end
+# with deafult we avoid inferred latches
+
+When using a case statement in Verilog to assign values to multiple outputs, you must assign values to all outputs in every case branch.
+If any output is missing an assignment, the synthesis tool may infer a latch to "remember" the previous value. This is usually unintended and can cause incorrect hardware behavior.
+
+ Bad Example (Partial Assignment – Latch Inferred)
+always @(*) begin
+  case (sel)
+    2'b00: begin
+      out1 = 1;
+      // Missing assignment for out2
+    end
+    2'b01: begin
+      out1 = 0;
+      out2 = 1;
+    end
+    default: begin
+      out1 = 0;
+      // Missing assignment for out2 again
+    end
+  endcase
+end
+
+
+Problem:
+out2 is not assigned in all the cases.
+
+Synthesis tool will create a latch to preserve the previous value of out2 — this is not desired in combinational logic.
+
+✅ Good Example (Fully Assigned – No Latch)
+
+*reg [1:0] sel;
+reg x, y;
+always @ (*)
+ begin
+    case (sel)
+        2'b00: begin
+           x = a;
+           y = b;
+        end
+        2'b01: begin
+           x = c;
+        end
+        default: begin
+           x = d;
+           y = b;
+        end
+    endcase
+ end*
+# We have assigned the value for select line '0', but when select line is '1' only value for x is assigned and not y.
+
+Partial assignment leads to inferred latches.
+
+<img width="312" height="370" alt="image" src="https://github.com/user-attachments/assets/850411f4-364c-419f-85ad-1e4325c73de2" />
+
+## Labs on "Incomplete If Case"
+
+### (i) Sky130RTL D5SK2 L1 Lab Incomplete IF part1
+
+We will see how the synthesis and simulator behaves when there is "incomplete if and case".
+
+Our files required here are inside *incomp*
