@@ -1241,14 +1241,140 @@ Invoke yosys after gtkwake command.
 
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/5ce632b3-5c46-4a69-ae02-57c14c0b0ad9" />
 
-SAGAR DI VOHTI LAST GTKWAVE PHOTOS
+<img width="1037" height="512" alt="image" src="https://github.com/user-attachments/assets/d9d004be-6477-459d-934e-213991b912b3" />
+
+The GLS shows a proper functionality of an MUX, but still our simulation and GLS are not the same hence we see a Simulation Mismatch. I'm attaching below our previous simulation so that we can easily see the difference.
+
+<img width="1031" height="530" alt="image" src="https://github.com/user-attachments/assets/51874aae-885f-436a-b756-bb337caaeedf" />
+
+### Simulating, Synthesizing and Gate Level Synthesis of good_mux and comparing the waveforms
+
+<img width="1032" height="521" alt="image" src="https://github.com/user-attachments/assets/8621e67e-8257-4575-8bcd-636fdd615730" />
+
+
+<img width="1028" height="515" alt="image" src="https://github.com/user-attachments/assets/372f03fd-87fb-4fd7-9339-7f9d15243eb2" />
+
+<img width="1031" height="507" alt="image" src="https://github.com/user-attachments/assets/4a3cf08b-daf1-4b40-bd26-5d02a46cbc8b" />
+
+<img width="1022" height="473" alt="image" src="https://github.com/user-attachments/assets/b6fcf64b-b938-4789-9d70-f39584039e99" />
+
+<img width="1020" height="498" alt="image" src="https://github.com/user-attachments/assets/a2d78a3f-b5d7-47ac-b0b2-d2affe150d63" />
+
+<img width="1032" height="492" alt="image" src="https://github.com/user-attachments/assets/396d33a8-0c6a-424e-b362-7c471d100d7d" />
+
+<img width="1026" height="487" alt="image" src="https://github.com/user-attachments/assets/f6081cac-8675-4352-87cc-bbb960e5d960" />
+
+<img width="1031" height="512" alt="image" src="https://github.com/user-attachments/assets/80cd2762-e60c-46f1-98d7-94fcefb7e453" />
+
+<img width="1027" height="512" alt="image" src="https://github.com/user-attachments/assets/23711b74-0140-4442-bc36-573a64be9981" />
+
+<img width="1032" height="511" alt="image" src="https://github.com/user-attachments/assets/c49397d3-0f0a-43a4-921b-219d0b780f8b" />
+
 
 ## Labs on synth-sim mismatch for blocking statement
 
 ## (i) SKY130RTL D4SK3 L1 Lab Synth sim mismatch blocking statement part1
 
+#### Incorrect Version (Simulation-Synthesis Mismatch)
+
+<img width="1035" height="491" alt="image" src="https://github.com/user-attachments/assets/1d2d4a67-6dcc-4b57-a9ec-b7cd2b0260e5" />
+
+module blocking_caveat ( 
+    input a, b, c,
+    output reg d 
+);
+
+reg x; 
+
+always @(*)
+
+begin
+
+    d = x & c;   //  Uses old value of x
+    
+    x = a | b;   // x is updated *after* d is computed
+    
+end
+
+endmodule
+
+<img width="1033" height="535" alt="image" src="https://github.com/user-attachments/assets/8c9f10ae-77c0-4516-bb49-fd6c63a69b72" />
+
+Problem:
+
+In a blocking assignment (=), the operations are executed in order, like software instructions.
+
+Here, d is assigned before x is updated, so it uses the old or garbage value of x.
+
+In simulation, this will cause d to produce incorrect results.
+
+In synthesis, the tool might optimize and connect the logic correctly, causing a mismatch between simulation and real hardware.
+
+#### Correct Version (Proper Combinational Logic)
+
+module blocking_caveat ( 
+    input a, b, c,
+    output reg d 
+);
+
+reg x; 
+
+always @(*)
+
+begin
+
+    x = a | b;   //  Compute x first
+    
+    d = x & c;   //  Then use x to compute d
+    
+end
+
+endmodule
 
 
+Why This is Correct:
+
+x is computed before being used in d.
+
+This ensures that d always uses the updated value of x.
+
+Simulation behavior will match synthesis, and the logic will behave as intended.
+
+Now let's simulate the module blocking_caveat and see if the output is as expected.
+
+### Simulation and Synthesis of blocking_caveat followed by GLS
+
+<img width="1032" height="507" alt="image" src="https://github.com/user-attachments/assets/b85765b8-50d7-48fd-90fc-5d9e63ee1678" />
+
+<img width="1027" height="498" alt="image" src="https://github.com/user-attachments/assets/09c59090-f53f-4777-abcf-95f2dfcfe27c" />
+
+The marked point in the waveform is not following d = (a | b) & c; because x, which is (a | b), is storing old values.
+
+Now, let's do the synthesis, generate our netlist and perform GLS and verify the results.
+
+<img width="1036" height="493" alt="image" src="https://github.com/user-attachments/assets/91ea30d4-fcc5-4496-964c-275000ae3059" />
+
+<img width="1017" height="511" alt="image" src="https://github.com/user-attachments/assets/835235e6-91b9-4748-ac8a-d5792d76e59f" />
+
+
+<img width="1026" height="428" alt="image" src="https://github.com/user-attachments/assets/f62ba9f0-9808-4f19-82dd-be817a367432" />
+
+<img width="1022" height="500" alt="image" src="https://github.com/user-attachments/assets/fcf15129-f369-4c10-8965-6978843a9658" />
+
+<img width="1037" height="502" alt="image" src="https://github.com/user-attachments/assets/80b97d2e-0eac-4394-9d83-ef94a7b4796c" />
+
+<img width="1025" height="513" alt="image" src="https://github.com/user-attachments/assets/6514e2ff-de06-4826-8577-03d38adea898" />
+
+<img width="1027" height="498" alt="image" src="https://github.com/user-attachments/assets/70010bc0-f77c-404e-b2ca-d0be9e5270a8" />
+
+
+The marked point in the waveform is following d = (a | b) & c
+
+I'm attaching below our previous simulation so that we can easily see the difference.
+
+<img width="1028" height="477" alt="image" src="https://github.com/user-attachments/assets/a61acfd5-4ee3-453b-9af5-bf08ab55856b" />
+
+So we can clearly Synthesis simulation mismatch due to blocking statements.
 
 # Optimization in Synthesis
 
@@ -1862,4 +1988,46 @@ iverilog mux_generate.v tb_mux_generate.v
 gtkwave mux_generate.vcd
 
 <img width="1028" height="477" alt="image" src="https://github.com/user-attachments/assets/1a2b50bd-9bf4-47fd-80f8-cfd6bc387e4d" />
+
+We observe that the output y correctly follows the selected input based on the value of the sel line:
+
+When sel = 2'b00, y = i0
+
+When sel = 2'b01, y = i1
+
+When sel = 2'b10, y = i2
+
+When sel = 2'b11, y = i3
+
+This behavior confirms the correct functionality of a 4:1 multiplexer, and this principle is essential when scaling to larger-bit multiplexers in complex circuits.
+
+For Synthesis using Yosys:
+
+yosys
+
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+
+read_verilog mux_generate.v
+
+synth -top mux_generate
+
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+
+show
+
+Explaination:
+
+read_liberty: Loads the standard cell library (used during mapping).
+
+read_verilog: Loads your Verilog design (mux_generate.v).
+
+synth -top mux_generate: Synthesizes the design with mux_generate as the top module.
+
+abc: Performs technology mapping using your specified liberty file.
+
+show: Displays the synthesized gate-level schematic.
+
+<img width="1008" height="493" alt="image" src="https://github.com/user-attachments/assets/55be5659-c9bd-4004-b0fe-8129fdefd282" />
+
+### Sky130RTL D5SK5 L2 Lab For and For Generate part2
 
