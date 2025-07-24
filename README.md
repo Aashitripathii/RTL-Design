@@ -221,8 +221,8 @@ This structure is commonly used in digital design where an immediate reset (such
 ### SKY130RTL D2SK3 L3 Lab flop synthesis simulations part1
 
 
-![image](https://github.com/user-attachments/assets/092ef44f-224f-45a8-a3eb-ec2ba519ce03)
-![image](https://github.com/user-attachments/assets/ec086fae-c919-42f5-8452-e60890eea172)
+[image](https://github.com/user-attachments/assets/092ef44f-224f-45a8-a3eb-ec2ba519ce03)
+[image](https://github.com/user-attachments/assets/ec086fae-c919-42f5-8452-e60890eea172)
 
 ![image](https://github.com/user-attachments/assets/77891de2-cc9e-4618-a47c-aec6634de09e)
 
