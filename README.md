@@ -829,7 +829,8 @@ This step is necessary before you can physically make your chip.
 
 ### (ii) SKY130RTL D3SK3 L2 Lab07 Sequential Logic Optimisations part2
 
-Sagar divohti
+<img width="1031" height="482" alt="image" src="https://github.com/user-attachments/assets/17db9c31-f59e-4ab2-8b71-f53cec6ea220" />
+
 
 ### (iii) SKY130RTL D3SK3 L3 Lab07 Sequential Logic Optimisations part3
 
