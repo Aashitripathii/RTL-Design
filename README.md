@@ -246,9 +246,43 @@ Also we need to initialize the flops for that we have 'Set' and 'Reset' which ca
 <img width="1028" height="537" alt="image" src="https://github.com/user-attachments/assets/8dccbd5b-c6ae-4bcb-8f88-f50d0fdb2daf" />
 
 ### SKY130RTL D2SK3 L2 Why Flops and Flop coding styles part2
-<img width="1037" height="493" alt="image" src="https://github.com/user-attachments/assets/79819ed8-65f0-46d4-901b-fb899e2a5b98" />
+<img width="1027" height="481" alt="image" src="https://github.com/user-attachments/assets/1548d6b5-3272-4bf6-a543-9a449e7883e0" />
 
-Understanding D Flip-Flop with Asynchronous and Synchronous Reset
+Above code is D-flop code for both asynchronous and synchronous reset. always at posedge clk signifies a posedge flipflop; posedge of asynchronous.
+it has ore priority than else part, First looking for asynchrnous clock. Let's breakdown one by one each line
+
+module dff_asyncres_syncres (...)
+
+Declares a module named dff_asyncres_syncres.
+
+Inputs: clk: Clock signal. async_reset: Asynchronous reset signal. sync_reset: Synchronous reset signal. d: Input data to the D flip-flop.
+
+Output: q: Output of the flip-flop (declared as reg because it's assigned inside an always block).
+
+always @ (posedge clk , posedge async_reset) This block is triggered on
+
+
+A rising edge of the clock (posedge clk) — used for synchronous behavior.
+
+A rising edge of async_reset — used for immediate (asynchronous) reset.
+
+This is a standard pattern for flip-flops that require both asynchronous and synchronous control.
+
+if (async_reset) If the asynchronous reset is triggered, q is set to 0 immediately, ignoring the clock.
+
+else if (sync_reset) If async_reset is not active, but sync_reset is high on the rising edge of the clock, then q is also set to 0.
+
+else q <= d; If neither reset is active, the D flip-flop captures the input d on the rising edge of the clock.
+
+This is an asynchronous reset, we entered into this loop because of posedge of edge. Only in case of posedge we can enter into always block. Circuit is getting sensitive to positive edge of clock. upon positive edge q is getting d. It is an asynchronous reset because it does not awaits for clock. If I apply reset at any point. the output will go low irrespective of q value.
+
+
+<img width="990" height="475" alt="image" src="https://github.com/user-attachments/assets/6e257a5c-506d-4ea8-bfa4-bb6da8a70ccb" />
+
+If we talk about asynch_set; "Set" means setting the output q to logic 1.Asynchronous" means this happens immediately when async_set goes high, regardless of the clock. The presence of async_set in the sensitivity list (always @(posedge clk, posedge async_set)) makes it asynchronous.
+
+<img width="1037" height="495" alt="image" src="https://github.com/user-attachments/assets/89e06492-0219-44c5-8bf4-99c23a5a067d" />
+
 
 ##  Understanding D Flip-Flop with Asynchronous and Synchronous Reset
 
@@ -282,25 +316,68 @@ always @(posedge clk or posedge async_reset)
   - A **rising edge of `async_reset`** → for immediate (asynchronous) reset
 - Used in designs that require both async and sync control
 
-###  Reset and Data Logic
-
-```verilog
-if (async_reset)
-    q  `sync_reset` > data assignment                           |
-
-This structure is commonly used in digital design where an immediate reset (such as power-up reset) is critical, along with a controlled (clocked) reset for system behavior.
 
 
 ### SKY130RTL D2SK3 L3 Lab flop synthesis simulations part1
 
+Now lets simulate the following flops
 
-[image](https://github.com/user-attachments/assets/092ef44f-224f-45a8-a3eb-ec2ba519ce03)
-[image](https://github.com/user-attachments/assets/ec086fae-c919-42f5-8452-e60890eea172)
+D FlipFlop with Asynchronous reset
 
-![image](https://github.com/user-attachments/assets/77891de2-cc9e-4618-a47c-aec6634de09e)
+D FlipFlop with Synchronous reset
 
+D FlipFlop with Synchronous and Asynchronous reset
+
+D FlipFlop with Asynchronous set
+
+### 1) D FlipFlop with Asynchronous reset
+
+<img width="1017" height="271" alt="image" src="https://github.com/user-attachments/assets/ecaf064e-d15b-4188-b5a6-b20606f06e08" />
+
+<img width="1033" height="821" alt="image" src="https://github.com/user-attachments/assets/cc160351-7f93-48df-922d-0aee232d6d6c" />
+
+<img width="1032" height="437" alt="image" src="https://github.com/user-attachments/assets/06cfd371-6001-4e55-b90e-e9b18a60f22c" />
+
+<img width="1032" height="357" alt="image" src="https://github.com/user-attachments/assets/4bebdf9c-5d57-4f2b-b9bf-4eb6cfe893c8" />
+
+<img width="1036" height="543" alt="image" src="https://github.com/user-attachments/assets/a514f486-a70a-4389-8a91-355d7429117b" />
+
+Zooming at the point when reset changes from low to high
+
+<img width="1033" height="537" alt="image" src="https://github.com/user-attachments/assets/21431c85-5c93-40d6-9e7c-7952a87d4592" />
+
+### 2) D FlipFlop with Synchronous reset
+
+<img width="1047" height="196" alt="image" src="https://github.com/user-attachments/assets/ed1e0145-192b-498c-a629-b5e9e8c97004" />
+
+<img width="1020" height="832" alt="image" src="https://github.com/user-attachments/assets/f705beae-516d-4aae-9e44-c98d442a8ac2" />
+
+<img width="903" height="466" alt="image" src="https://github.com/user-attachments/assets/2bd84798-dcb1-43e6-bc94-013e7e684d2f" />
+
+<img width="1035" height="301" alt="image" src="https://github.com/user-attachments/assets/c010a299-fb83-4d37-b195-e5145918130e" />
+
+<img width="1027" height="458" alt="image" src="https://github.com/user-attachments/assets/51e944c1-dea4-4a25-a397-9b5754d62481" />
+
+### 3) D FlipFlop with Synchronous and Asynchronous reset
+
+<img width="967" height="725" alt="image" src="https://github.com/user-attachments/assets/43ce8b5e-0df3-42d1-b561-44f4621fcfc3" />
+
+<img width="877" height="507" alt="image" src="https://github.com/user-attachments/assets/c41be373-6501-4f89-9346-6dcafade6d5e" />
+
+<img width="1031" height="283" alt="image" src="https://github.com/user-attachments/assets/91e500f5-3a94-4208-959a-0548f294ad95" />
+
+<img width="1042" height="412" alt="image" src="https://github.com/user-attachments/assets/975df7e1-3f86-48ad-81c5-19c4d9b23d7e" />
+
+### 4) D FlipFlop with Asynchronous set
+
+<img width="1035" height="307" alt="image" src="https://github.com/user-attachments/assets/c11c4a29-74a7-4b50-8ea5-8552151d5997" />
+
+<img width="1035" height="396" alt="image" src="https://github.com/user-attachments/assets/12ff00a5-85f4-4ddf-9f17-58def42d3798" />
+
+<img width="1027" height="367" alt="image" src="https://github.com/user-attachments/assets/ef5e1539-8a47-40af-958c-c1968894dc31" />
 
 ### (iv) SKY130RTL D2SK3 L4 Lab flop synthesis simulations part2
+
 Now let's synthesize the following D flipflops
 
 D FlipFlop with Asynchronous reset
@@ -321,13 +398,20 @@ What dfflibmap Does?
 It maps generic D flip-flop constructs (like always @(posedge clk) in RTL) to specific standard cells in the library.
 This is essential for correct technology mapping — otherwise, the tool may not know which flip-flop cell to use.
 It ensures timing-aware synthesis using the correct sequential elements.
-![image](https://github.com/user-attachments/assets/8b898372-2a8a-4bab-beae-454e1033434c)
-![image](https://github.com/user-attachments/assets/88cacab1-ef82-4c82-b38e-5913a734b96c)
-![image](https://github.com/user-attachments/assets/e8c3f90d-1051-4629-bb32-baacd98d5ded)
-![image](https://github.com/user-attachments/assets/f0aa10bb-8ce1-4503-ae20-1ef0e06c851f)
+
+<img width="1022" height="488" alt="image" src="https://github.com/user-attachments/assets/f7bf1abf-6b1f-4730-9447-9772896eda87" />
+
+<img width="1032" height="542" alt="image" src="https://github.com/user-attachments/assets/b4c2e375-df3e-4040-851c-a468b7f89ad3" />
+
+<img width="1008" height="536" alt="image" src="https://github.com/user-attachments/assets/12c4fb29-e09c-47fb-90ac-a6fdf060d1ec" />
+
+<img width="1006" height="472" alt="image" src="https://github.com/user-attachments/assets/da0040e8-9aae-48df-abbf-3a82ffc0e6e3" />
+
+<img width="1041" height="162" alt="image" src="https://github.com/user-attachments/assets/411b3cbd-00af-4e66-83b9-7ec3f0c02dd6" />
+
 What we Wrote in Verilog:
 
-In your Verilog code, you wrote:
+In our Verilog code, we wrote:
 if (reset)
 
     q <= 0;
@@ -361,8 +445,33 @@ Now, when your reset signal is 1:
  the inverter turns it into 0,
  which correctly triggers the flip-flop with an active-low reset.
 
-![image](https://github.com/user-attachments/assets/2698a3e1-2ebf-42c3-ab8b-096e33dfe4fd)
-![image](https://github.com/user-attachments/assets/df9a4900-29a0-4a81-9713-2638f3766323)
+### 2) D FlipFlop with Synchronous reset
+
+<img width="1032" height="423" alt="image" src="https://github.com/user-attachments/assets/1824e661-014b-4eef-8287-e3de69b5ec3b" />
+
+<img width="1002" height="530" alt="image" src="https://github.com/user-attachments/assets/4bdbdd66-c514-457b-a2ec-a1d2c4eb108f" />
+
+<img width="961" height="536" alt="image" src="https://github.com/user-attachments/assets/8b6c5c68-e01b-4877-af59-8bb75e57787b" />
+
+<img width="1038" height="252" alt="image" src="https://github.com/user-attachments/assets/0134dda4-cb82-43eb-bc96-f172142ed791" />
+
+### 3) D FlipFlop with Synchronous and Asynchronous reset
+
+<img width="1050" height="337" alt="image" src="https://github.com/user-attachments/assets/d1ab47a3-b2f3-45d2-b5ed-15ccc902ad23" />
+
+<img width="1027" height="532" alt="image" src="https://github.com/user-attachments/assets/ba3f4666-1919-46dc-835d-9813d508eb55" />
+
+<img width="633" height="410" alt="image" src="https://github.com/user-attachments/assets/d7442e3e-2ee7-43dd-8fd3-bc4dd199eb69" />
+
+### 4) D FlipFlop with Asynchronous set
+
+<img width="1030" height="343" alt="image" src="https://github.com/user-attachments/assets/c843b535-7399-4b7b-ad1c-51e647acd3a2" />
+
+<img width="1026" height="542" alt="image" src="https://github.com/user-attachments/assets/08355dc8-a865-4f5e-a05a-cfbf323345ba" />
+
+<img width="680" height="418" alt="image" src="https://github.com/user-attachments/assets/5c82899d-10b7-4b60-8f56-8338f4962e64" />
+
+
 What is dfflibmap in Yosys?
 
 dfflibmap is a command used during synthesis in Yosys to map flip-flops in your RTL design to actual flip-flop cells available in the standard cell library.
@@ -437,23 +546,34 @@ Safely ignore the flip-flops (they are already mapped)
 
 Focus on mapping and optimizing the remaining combinational logic.
 
-#### D FlipFlop with Synchronous reset
-
-![image](https://github.com/user-attachments/assets/b27fc2b3-a173-4c96-b8fb-07c6b646563a)
-![image](https://github.com/user-attachments/assets/b429cee9-1a12-4b84-b370-703278097aa5)
 
 ### (v) SKY130RTL D2SK3 L5 Interesting optimisations part1
 
 
-![image](https://github.com/user-attachments/assets/7d7839d0-7f1b-4035-9708-ea952cb23417)
-![image](https://github.com/user-attachments/assets/b3c3ca1c-dd80-4323-9b98-309d9917b22e)
+Optimization Insight: Multiplication by Constant Power of 2
+We are examining an important optimization that synthesis tools automatically apply.
 
-![image](https://github.com/user-attachments/assets/532bbe13-aebe-4f91-a6fb-36a1fd1bf170)
-![image](https://github.com/user-attachments/assets/a030acdc-53e8-4ea5-a214-871f1a559d00)
-![image](https://github.com/user-attachments/assets/4bbeb23c-e093-42b7-a15c-13bd58119ef0)
-![image](https://github.com/user-attachments/assets/1c78997b-4fe7-466c-90f5-d865ab7ca239)
+We will consider two Verilog RTL files: mul2.v and mul8.v. Open them together using:
 
-![image](https://github.com/user-attachments/assets/80cabd66-1ba0-431a-92b2-e6f7d1c5dde3)
+gvim mul*.v -o
+
+Multiplication by 2 = shift left by 1 bit
+Multiplication by 4 = shift left by 2 bits
+Multiplication by 2^n= shift by n bits
+
+<img width="1047" height="427" alt="image" src="https://github.com/user-attachments/assets/2861e85b-cf21-4c7b-a13c-b840b28f3b2f" />
+
+<img width="945" height="545" alt="image" src="https://github.com/user-attachments/assets/77a73030-2f93-4576-b092-9359a783e520" />
+
+<img width="1015" height="256" alt="image" src="https://github.com/user-attachments/assets/04c7d48b-22f6-43f3-b565-e7282ca46883" />
+
+<img width="1037" height="332" alt="image" src="https://github.com/user-attachments/assets/36aa9898-1c4a-4fe4-8044-3ea452b56f89" />
+
+<img width="1023" height="547" alt="image" src="https://github.com/user-attachments/assets/cc0cfb8a-b134-46f4-a508-4a02103b911a" />
+
+<img width="1028" height="550" alt="image" src="https://github.com/user-attachments/assets/03344394-90f6-468c-b274-25e6fd20f80e" />
+
+<img width="892" height="177" alt="image" src="https://github.com/user-attachments/assets/8753a8d0-c038-487c-b70e-16067bfae9fb" />
 
 So instead of generating a multiplier, the tool simply wires the bits accordingly — no actual multiplier hardware is required.
 
