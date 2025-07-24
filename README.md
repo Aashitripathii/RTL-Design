@@ -43,7 +43,9 @@ Using a clear instance name like uut helps make testbenches easy to read and mai
 
 ![image](https://github.com/user-attachments/assets/54faabb2-d917-4108-838e-7cb8e24663eb)
 ## Introduction to Yosys and Logic synthesis
+
 ###  SKY130RTL D1SK3 L1 Introduction to yosys
+
 #### What is netlist?
 A netlist is a text-based description of an electronic circuit that lists all the components (like transistors, resistors, capacitors, or logic gates) and details how they are connected to each other through electrical nodes or "nets". The netlist acts as the blueprint for the circuit’s connectivity, much like a recipe lists ingredients and how to combine them. It does not describe the physical arrangement of components, only their logical or electrical connections. 
 COMPONENTS:
@@ -58,18 +60,89 @@ This example shows two components and how their pins are connected, but not wher
 netlist is the representation of the design in the form of cells present in .lib
 ![image](https://github.com/user-attachments/assets/d77ec7a1-70db-4957-96c4-9043e292f8af)
 testbench will be same as RTL test bench.
+
 ### SKY130RTL D1SK3 L2 introduction to logic synthesis part1
 
-RTL design stands for Register Transfer Level design. It is a fundamental step in digital circuit design, where the functionality of a digital system is described in terms of the flow of data between hardware registers and the logical operations performed on that data
-How do i map the RTL to digital ckt?
-![image](https://github.com/user-attachments/assets/a20fc049-2638-4e97-a262-071609bd0d76)
-![image](https://github.com/user-attachments/assets/65c6d3b7-4e09-4314-ae80-af3e16deaef9)
-![image](https://github.com/user-attachments/assets/dc19619c-75a4-442e-b4c7-0cb502d1b00c)
-### SKY130RTL D1SK3 L3 introduction to logic synthesis part2
-![image](https://github.com/user-attachments/assets/67fb34f5-06a8-4113-a16f-2527fecec2a4)
-![image](https://github.com/user-attachments/assets/d9025444-0498-4e51-88d9-e5e31dd27ffe)
-![image](https://github.com/user-attachments/assets/7d1c1c3a-9632-43e4-abcf-34eeffb549d6)
-![image](https://github.com/user-attachments/assets/932bc9a1-e93c-42d3-873d-25d6e7c1e3a1)
+We will discuss about the complete flow of Logic Synthesis.
+First is RTL Design: RTL Design is the behavioural representation of required specification. It is written in the form of HDL code as shown below.
+
+<img width="362" height="365" alt="image" src="https://github.com/user-attachments/assets/f364ebf5-a01a-4567-8c1c-02a3f4cfe078" />
+
+Now to convert the RTL design into a digital logic circuit we need a Synthesizer.
+
+<img width="1013" height="517" alt="image" src="https://github.com/user-attachments/assets/90321e16-b015-4aaa-b800-16b7044329e1" />
+
+We need to convert RTL to gate level translation.
+
+The design is converted into gate and the connections are amde between the gates.
+
+<img width="511" height="742" alt="image" src="https://github.com/user-attachments/assets/30188565-0baa-4ceb-8fc9-0f811e71f472" />
+
+This is given out as a file called netlist.
+
+What is .lib?
+
+a) It is a collection of all logical modules and standard cells. b) It includes all basic logic gates like AND, OR, NOR, NAND, etc. c) It also includes different flavours of same logic gates like-slow, medium and fast gates.
+
+<img width="493" height="590" alt="image" src="https://github.com/user-attachments/assets/057e3849-2433-4790-ad9c-2826ea3c00a2" />
+
+Why do we need different flavours of gates?
+
+We know combinational delay in logic path determines the max speed of operation of digital logic circuit.
+Tclk > Tcq_a + Tcomb + Tsetup_b We need cells that work fast to make Tcomb small.
+
+<img width="1087" height="292" alt="image" src="https://github.com/user-attachments/assets/8fc0f37d-7946-4d8c-83aa-21cf44c54948" />
+
+But we also need slow cells.
+
+### Sky130RTL D1SK3 L3 Introduction to Logic Synthesis part2
+
+Are Faster Cells Sufficient?
+
+At first glance, it might seem that using only faster cells is the key to achieving maximum performance. After all, higher clock speeds typically mean better performance. But this leads us to an important question:
+If faster cells minimize delay, why are slower cells needed at all?
+
+Why Do We Need Slow Cells?
+To meet timing constraints, both setup and hold times must be satisfied:
+
+For setup time (performance constraint), we want the data to arrive before the clock edge.
+For hold time (reliability constraint), we want the data to stay stable briefly after the clock edge.
+
+<img width="1047" height="300" alt="image" src="https://github.com/user-attachments/assets/8f7b9fd9-b868-4ef2-bc5f-7488592e2f20" />
+
+If the combinational delay is too short, we may violate hold time.
+
+Thold_B < Tcq_A + Tcomb
+
+So:
+
+We need faster cells to reduce Tcomb and meet setup timing.
+
+We need slower cells to increase Tcomb and avoid hold time violations.
+
+The .lib file includes all these different cell variants to allow flexibility in achieving the correct balance.
+
+#### Trade-Offs: Speed vs. Area/Power
+Faster cells offer performance benefits but come at a cost:
+
+More area
+More power consumption
+Greater risk of hold time violations
+Slower cells are:
+
+Power-efficient
+
+Area-efficient
+
+Useful in preventing hold violations
+
+Hence, faster cells are not always sufficient or ideal.
+
+##### Conclusion
+The process of synthesis is not just about making the circuit work—it's about making it work efficiently. The selection between faster and slower cells is a critical design decision, and synthesis tools use constraints to make this trade-off in a balanced way.
+
+<img width="1087" height="752" alt="image" src="https://github.com/user-attachments/assets/b7c17dfa-fd77-4add-aa1b-6d3833d96b64" />
+
 ## Labs using Yosys and Sky130 PDKs
 ### SKY130RTL D1SK4 L1 Lab3 Yosys 1 good mux Part1
 
