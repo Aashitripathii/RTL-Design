@@ -2153,4 +2153,58 @@ There are two ways of executing this:
 
 Instantiating FA 4 times
 For generate
+For generate
 
+The best option is "For generate" as it replicates the hardware and we don't have to instantiate every time.
+The files we are going to use are: gvim rca.v fa.v -o.
+
+<img width="1037" height="472" alt="image" src="https://github.com/user-attachments/assets/2ccd7720-edae-4f84-8bb0-46f04fa1dd5a" />
+
+We should know the "Rule for Addition":
+
+If we add 2 'N' bit numbers, the resultant is (N + 1) number.
+If we add an 'N' bit and 'M' bit number, the resultant is [max(N,M) + 1] bit number .
+So here we are adding two 8 bits numbers, the output we will get is a 9 bit number.
+
+### Sky130RTL D5SK5 L4 Lab For and For Generate part4
+
+We will make the numbers in decimal format, by right clicking and changing the 'data format' to 'decimal'.
+
+Why For-Generate?
+To avoid writing repetitive code for multiple FAs, Verilog provides the generate for construct. This automatically instantiates FAs in a loop, simplifying and scaling the design.
+
+Verilog Simulation Flow:
+
+iverilog fa.v rca.v tb_rca.v
+
+./a.out
+
+gtkwave tb_rca.vcd
+
+fa.v: Contains the Full Adder module.
+
+rca.v: Uses for-generate to build the 8-bit RCA.
+
+tb_rca.v: Testbench to simulate the RCA.
+
+After simulation, you can visualize results in GTKWave, and right-click on signals to change the display format to decimal.
+
+<img width="1035" height="417" alt="image" src="https://github.com/user-attachments/assets/669343ca-1bbe-42df-869f-786b2863ca98" />
+
+<img width="1032" height="375" alt="image" src="https://github.com/user-attachments/assets/c32c2614-16e1-4c8b-8d86-d50aa9292bb3" />
+
+<img width="1032" height="536" alt="image" src="https://github.com/user-attachments/assets/3ada3b3a-b481-47e2-bbba-1fa3d98e7c37" />
+
+<img width="1037" height="542" alt="image" src="https://github.com/user-attachments/assets/aa40b483-f214-4bb4-b23a-5c9bdebe73e1" />
+
+<img width="1027" height="542" alt="image" src="https://github.com/user-attachments/assets/f620fb55-bd67-4d05-958c-9972584dcfb4" />
+
+<img width="1022" height="403" alt="image" src="https://github.com/user-attachments/assets/3d0f9c0b-f80d-4f0c-9363-62feb17fd33f" />
+
+### References
+
+Google SkyWater PDK
+
+VSD Workshop GitHub Material
+
+NPTEL – Hardware Modelling Using Verilog by Prof. Indranil Sengupta
